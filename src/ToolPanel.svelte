@@ -1,6 +1,7 @@
 <script>
   import { toolMode, gridVisible, selectedBeads, moveOffset, canvasColors, history, zoomLevel } from './stores.js'
-  
+  import { applyMoveToCanvas } from './beadPositionUtils.js'
+
   export let gridSize
   export let stitchType = 'offset'
   export let layoutRotation = 0
@@ -24,33 +25,6 @@
     }
   }
 
-  // Function to get bead position from ID for different stitch types
-  const getBeadPosition = (beadId, stitchType, gridSize, layoutRotation) => {
-    const row = Math.floor(beadId / gridSize)
-    const col = beadId % gridSize
-    
-    if (stitchType === 'square') {
-      // Square stitch: simple grid
-      return { row, col }
-    } else if (stitchType === 'peyote') {
-      // Peyote stitch: offset rows
-      return { row, col }
-    } else if (stitchType === 'brick') {
-      // Brick stitch: offset columns  
-      return { row, col }
-    } else {
-      // Default/offset stitch
-      return { row, col }
-    }
-  }
-
-  // Function to get new bead ID from position for different stitch types
-  const getBeadIdFromPosition = (row, col, gridSize) => {
-    if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
-      return row * gridSize + col
-    }
-    return null
-  }
 
   const handleMove = (dx, dy) => {
     if ($selectedBeads.size > 0) {
@@ -60,44 +34,19 @@
 
   const handleConfirmMove = () => {
     if ($selectedBeads.size > 0 && ($moveOffset.x !== 0 || $moveOffset.y !== 0)) {
-      // Apply the move to the canvas
-      const newCanvas = {...$canvasColors}
-      const selectedArray = Array.from($selectedBeads)
-      
-      // Create a mapping of old bead IDs to new positions
-      const beadMoves = new Map()
-      
-      selectedArray.forEach(beadId => {
-        const colorId = $canvasColors[beadId]
-        if (colorId !== undefined) {
-          // Get current position using proper mapping
-          const position = getBeadPosition(beadId, stitchType, gridSize, layoutRotation)
-          
-          const newRow = position.row + $moveOffset.y
-          const newCol = position.col + $moveOffset.x
-          
-          // Get new bead ID using proper mapping
-          const newBeadId = getBeadIdFromPosition(newRow, newCol, gridSize)
-          
-          if (newBeadId !== null) {
-            beadMoves.set(beadId, { newBeadId, colorId })
-          }
-        }
-      })
-      
-      // First, remove the selected beads from their current positions
-      selectedArray.forEach(beadId => {
-        delete newCanvas[beadId]
-      })
-      
-      // Then, add them at their new positions
-      beadMoves.forEach(({ newBeadId, colorId }, oldBeadId) => {
-        newCanvas[newBeadId] = colorId
-      })
-      
+      // Apply the move to the canvas using the shared utility
+      const newCanvas = applyMoveToCanvas(
+        $selectedBeads,
+        $moveOffset,
+        $canvasColors,
+        stitchType,
+        gridSize,
+        layoutRotation
+      )
+
       canvasColors.set(newCanvas)
       history.commit(newCanvas)
-      
+
       // Clear selection and reset offset
       selectedBeads.clear()
       moveOffset.reset()
