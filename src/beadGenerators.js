@@ -26,8 +26,8 @@ export function generateRawBeads(size, h, w) {
         { x: centerX - unitSpacing/2, y: centerY, key: `${j-0.5}_${i}` }      // left (shared with unit left)
       ]
 
-      positions.forEach((pos, index) => {
-        // Only create bead if this position doesn't already exist (avoid duplicates from sharing)
+      positions.forEach((pos) => {
+        // Only create a bead if this position doesn't already exist (avoid duplicates from sharing)
         if (!beadMap.has(pos.key)) {
           const beadId = beadMap.size // Sequential ID
           beadMap.set(pos.key, beadId)

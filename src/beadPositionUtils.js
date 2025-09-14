@@ -1,7 +1,7 @@
 // Shared utilities for bead position calculations
 
 // Get bead position from ID for different stitch types
-export function getBeadPosition(beadId, stitchType, gridSize, layoutRotation) {
+export function getBeadPosition(beadId, stitchType, gridSize) {
   const row = Math.floor(beadId / gridSize)
   const col = beadId % gridSize
 

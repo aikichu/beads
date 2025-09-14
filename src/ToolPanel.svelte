@@ -13,7 +13,6 @@
     } else if (tool === 'selection' && stitchType === 'raw') {
       // Disable selection for raw stitch - too complex
       alert('Selection is not available for RAW stitch due to its complex overlapping pattern.')
-      return
     } else {
       toolMode.set(tool)
       

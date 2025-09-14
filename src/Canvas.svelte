@@ -1,6 +1,6 @@
 <script>
   import Bead from './Bead.svelte'
-  import { canvasColors, selectedColorId, history, step, zoomLevel, selectedBeads, moveOffset, toolMode, gridVisible } from './stores.js'
+  import { canvasColors, selectedColorId, history, step, zoomLevel, selectedBeads, moveOffset } from './stores.js'
   import { makeBeads, BEAD_WIDTH, BEAD_HEIGHT } from './beadGenerators.js'
   import { calculatePreviewBeads } from './beadPositionUtils.js'
 
@@ -32,7 +32,7 @@
 
 
   const handleTouchMove = (e) => {
-    if($step != "painting") return
+    if($step !== "painting") return
     $canvasColors[document.elementFromPoint(e.touches[0].pageX, e.touches[0].pageY).id] = $selectedColorId
   }
 
