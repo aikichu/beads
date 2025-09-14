@@ -1,6 +1,9 @@
 <script>
-  import { toolMode, gridVisible, selectedBeads, moveOffset, canvasColors, history, zoomLevel } from './stores.js'
-  import { applyMoveToCanvas } from './beadPositionUtils.js'
+  import { toolMode, gridVisible, selectedBeads } from './stores.js'
+  import ZoomControls from './components/ZoomControls.svelte'
+  import HistoryControls from './components/HistoryControls.svelte'
+  import SelectionControls from './components/SelectionControls.svelte'
+  import ResetButton from './components/ResetButton.svelte'
 
   export let gridSize
   export let stitchType = 'offset'
@@ -25,67 +28,6 @@
   }
 
 
-  const handleMove = (dx, dy) => {
-    if ($selectedBeads.size > 0) {
-      moveOffset.move(dx, dy)
-    }
-  }
-
-  const handleConfirmMove = () => {
-    if ($selectedBeads.size > 0 && ($moveOffset.x !== 0 || $moveOffset.y !== 0)) {
-      // Apply the move to the canvas using the shared utility
-      const newCanvas = applyMoveToCanvas(
-        $selectedBeads,
-        $moveOffset,
-        $canvasColors,
-        stitchType,
-        gridSize,
-        layoutRotation
-      )
-
-      canvasColors.set(newCanvas)
-      history.commit(newCanvas)
-
-      // Clear selection and reset offset
-      selectedBeads.clear()
-      moveOffset.reset()
-    }
-  }
-
-  // Zoom controls
-  const handleZoomIn = () => {
-    zoomLevel.zoomIn()
-  }
-
-  const handleZoomOut = () => {
-    zoomLevel.zoomOut()
-  }
-
-  // History controls
-  const handleUndo = () => {
-    history.undo()
-    canvasColors.set($history.versions[$history.cursor])
-  }
-
-  const handleRedo = () => {
-    history.redo()
-    canvasColors.set($history.versions[$history.cursor])
-  }
-
-  // Reset function
-  const handleReset = () => {
-    if (confirm('Are you sure you want to reset the canvas? This will clear all your work.')) {
-      canvasColors.reset()
-      history.reset()
-      selectedBeads.clear()
-      moveOffset.reset()
-      toolMode.reset()
-    }
-  }
-
-  // Derived values for button states
-  $: canUndo = $history.cursor > 0
-  $: canRedo = $history.cursor < $history.versions.length - 1
 </script>
 
 <div class="tool-panel">
@@ -131,49 +73,19 @@
     </button>
   </div>
 
-  <!-- Move controls - only show when selection tool is active and beads are selected -->
-  {#if $toolMode === 'selection' && $selectedBeads.size > 0}
-    <div class="move-controls">
-      <div class="move-arrows">
-        <button on:click={() => handleMove(0, -1)} class='move-button' aria-label='move up'>↑</button>
-        <div class="move-row">
-          <button on:click={() => handleMove(-1, 0)} class='move-button' aria-label='move left'>←</button>
-          <button on:click={() => handleMove(1, 0)} class='move-button' aria-label='move right'>→</button>
-        </div>
-        <button on:click={() => handleMove(0, 1)} class='move-button' aria-label='move down'>↓</button>
-      </div>
-      <button on:click={handleConfirmMove} class='confirm-button' aria-label='confirm move'>✓</button>
-    </div>
+  <!-- Move controls - only show when selection tool is active -->
+  {#if $toolMode === 'selection'}
+    <SelectionControls {gridSize} {stitchType} {layoutRotation} />
   {/if}
 
   <!-- Zoom controls -->
-  <div class="zoom-controls">
-    <h4>Zoom</h4>
-    <div class="zoom-buttons">
-      <button on:click={handleZoomIn} class='zoom-button' aria-label='zoom in' title='Zoom in'>+</button>
-      <button on:click={handleZoomOut} class='zoom-button' aria-label='zoom out' title='Zoom out'>−</button>
-    </div>
-  </div>
+  <ZoomControls />
 
   <!-- History controls -->
-  <div class="history-controls">
-    <h4>History</h4>
-    <div class="history-buttons">
-      <button on:click={handleUndo} class='history-button' class:disabled={!canUndo} aria-label={canUndo ? 'undo' : 'undo (disabled)'} title='Undo last action'>
-        ↶
-      </button>
-      <button on:click={handleRedo} class='history-button' class:disabled={!canRedo} aria-label={canRedo ? 'redo' : 'redo (disabled)'} title='Redo last action'>
-        ↷
-      </button>
-    </div>
-  </div>
+  <HistoryControls />
 
   <!-- Reset control -->
-  <div class="reset-control">
-    <button on:click={handleReset} class='reset-button' aria-label='reset canvas' title='Reset canvas (clear all work)'>
-      🗑️
-    </button>
-  </div>
+  <ResetButton />
 </div>
 
 <style>
@@ -218,168 +130,5 @@
     border-color: #007bff;
     background-color: #e3f2fd;
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-  }
-
-  .move-controls {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    background-color: #fff3cd;
-    border-radius: 0.5rem;
-    border: 2px solid #ffc107;
-  }
-
-  .move-arrows {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
-  }
-
-  .move-row {
-    display: flex;
-    gap: 0.25rem;
-  }
-
-  .move-button {
-    width: 2rem;
-    height: 2rem;
-    background-color: #ffc107;
-    color: white;
-    border: none;
-    border-radius: 0.25rem;
-    font-size: 0.8rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-
-  .move-button:hover {
-    background-color: #e0a800;
-  }
-
-  .confirm-button {
-    width: 2.5rem;
-    height: 2rem;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 0.25rem;
-    font-size: 0.8rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-
-  .confirm-button:hover {
-    background-color: #218838;
-  }
-
-  /* Section headers */
-  h4 {
-    margin: 0 0 0.5rem 0;
-    font-size: 0.9rem;
-    color: #666;
-    text-align: center;
-    font-weight: 600;
-  }
-
-  /* Zoom controls */
-  .zoom-controls {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    background-color: #e8f4fd;
-    border-radius: 0.5rem;
-    border: 1px solid #b3d9ff;
-  }
-
-  .zoom-buttons {
-    display: flex;
-    gap: 0.25rem;
-  }
-
-  .zoom-button {
-    width: 2rem;
-    height: 2rem;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 0.25rem;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-
-  .zoom-button:hover {
-    background-color: #0056b3;
-  }
-
-  /* History controls */
-  .history-controls {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    background-color: #fff3cd;
-    border-radius: 0.5rem;
-    border: 1px solid #ffeaa7;
-  }
-
-  .history-buttons {
-    display: flex;
-    gap: 0.25rem;
-  }
-
-  .history-button {
-    width: 2rem;
-    height: 2rem;
-    background-color: #ffc107;
-    color: white;
-    border: none;
-    border-radius: 0.25rem;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-
-  .history-button:hover:not(.disabled) {
-    background-color: #e0a800;
-  }
-
-  .history-button.disabled {
-    background-color: #6c757d;
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
-
-  /* Reset control */
-  .reset-control {
-    display: flex;
-    justify-content: center;
-    padding: 0.5rem;
-  }
-
-  .reset-button {
-    width: 2.5rem;
-    height: 2.5rem;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-
-  .reset-button:hover {
-    background-color: #c82333;
   }
 </style>
