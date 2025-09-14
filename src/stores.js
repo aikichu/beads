@@ -1,36 +1,27 @@
 import { writable, derived } from 'svelte/store';
 import { areEqual } from './utils.js'
+import { SYMBOL_POOL, DEFAULT_COLOR_PALETTE, ZOOM_CONFIG, TOOL_MODES, APP_STEPS } from './constants.js'
 
 const defaultSelectedColorID = () => 0
-// Symbol pool for colors
-const symbolPool = ['▲', '▼', '♥', '♦', '■', '●', '★', '◆', '▲', '▼', '◄', '►', '◊', '○', '□', '△', '▽', '◈', '◉', '◐', '◑', '◒', '◓', '◔', '◕', '◖', '◗', '◘', '◙', '◚', '◛', '◜', '◝', '◞', '◟', '◠', '◡', '◢', '◣', '◤', '◥', '◦', '◧', '◨', '◩', '◪', '◫', '◬', '◭', '◮', '◯']
 
-const defaultColorPalette = () => ([
-  {h: 175, s:65, l:35, id: 0, symbol: symbolPool[0]},
-  {h: 150, s:74, l:72, id: 1, symbol: symbolPool[1]},
-  {h: 50, s:91, l:70, id: 2, symbol: symbolPool[2]},
-  {h: 11, s:100, l:85, id: 3, symbol: symbolPool[3]},
-  {h: 16, s:95, l:65, id: 4, symbol: symbolPool[4]},
-  {h: 0, s:100, l:100, id: 5, symbol: symbolPool[5]},
-  {h: 0, s:100, l:100, id: 6, symbol: symbolPool[6]},
-  {h: 0, s:100, l:100, id: 7, symbol: symbolPool[7]},
-  {h: 0, s:100, l:100, id: 8, symbol: symbolPool[8]},
-  {h: 0, s:100, l:100, id: 9, symbol: symbolPool[9]},
-  {h: 0, s:100, l:100, id: 10, symbol: symbolPool[10]},
-  {h: 0, s:100, l:100, id: 11, symbol: symbolPool[11]},
-])
+const defaultColorPalette = () => (
+  DEFAULT_COLOR_PALETTE.map((color, index) => ({
+    ...color,
+    symbol: SYMBOL_POOL[index]
+  }))
+)
 // const defaultCanvas = () => ({...Array(400).fill().map((_,i) => (Math.floor(i/20) % 5))})
 const defaultCanvas = () => ({})
 const defaultHistory = () => ({cursor: 0, versions:[defaultCanvas()]})
 
 const createStep = () => {
-  const { subscribe, update, set } = writable("configuring")
+  const { subscribe, update, set } = writable(APP_STEPS.CONFIGURING)
 
   return {
     subscribe,
     update,
-    setPainting: () => set("painting"),
-    setConfiguring: () => set("configuring")
+    setPainting: () => set(APP_STEPS.PAINTING),
+    setConfiguring: () => set(APP_STEPS.CONFIGURING)
   }
 }
 
@@ -76,8 +67,8 @@ const createZoomLevel = () => {
     subscribe,
     update,
     set,
-    zoomIn: () => update(level => Math.min(level * 1.2, 5)), // Max 5x zoom
-    zoomOut: () => update(level => Math.max(level / 1.2, 0.2)), // Min 0.2x zoom
+    zoomIn: () => update(level => Math.min(level * ZOOM_CONFIG.STEP, ZOOM_CONFIG.MAX)),
+    zoomOut: () => update(level => Math.max(level / ZOOM_CONFIG.STEP, ZOOM_CONFIG.MIN)),
     reset: () => set(1)
   }
 }
@@ -95,17 +86,17 @@ const createGridVisible = () => {
 }
 
 const createToolMode = () => {
-  const { subscribe, update, set } = writable('paint') // 'paint', 'eraser', 'selection', 'grid'
+  const { subscribe, update, set } = writable(TOOL_MODES.PAINT)
 
   return {
     subscribe,
     update,
     set,
-    setPaint: () => set('paint'),
-    setEraser: () => set('eraser'),
-    setSelection: () => set('selection'),
-    setGrid: () => set('grid'),
-    reset: () => set('paint')
+    setPaint: () => set(TOOL_MODES.PAINT),
+    setEraser: () => set(TOOL_MODES.ERASER),
+    setSelection: () => set(TOOL_MODES.SELECTION),
+    setGrid: () => set(TOOL_MODES.GRID),
+    reset: () => set(TOOL_MODES.PAINT)
   }
 }
 

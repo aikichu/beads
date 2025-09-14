@@ -7,7 +7,9 @@
   export let shape = 'rectangle'
   export let isPreview = false
   export let stitchType = 'offset'
-  import { colorPalette, canvasColors, selectedColorId, history, step, eraserMode, legendVisible, gridVisible, toolMode, selectedBeads } from './stores.js'
+
+  // Only import stores that are actually needed
+  import { colorPalette, canvasColors, selectedColorId, history, step, legendVisible, gridVisible, toolMode, selectedBeads } from './stores.js'
 
   $: originalId = isPreview ? id.replace('preview_', '') : id
   $: colorId = $canvasColors[originalId]
@@ -54,23 +56,28 @@
   })()
 
   const paint = () => {
-    if ($toolMode === 'eraser') {
+    // Use get() to read current value without subscribing
+    const currentToolMode = $toolMode
+
+    if (currentToolMode === 'eraser') {
       // Eraser mode: remove color from this bead
       canvasColors.update((oldCanvas) => {
         const newCanvas = {...oldCanvas}
         delete newCanvas[originalId]
         return newCanvas
       })
-    } else if ($toolMode === 'paint') {
+    } else if (currentToolMode === 'paint') {
       // Paint mode: apply selected color to this bead
       canvasColors.update((oldCanvas) => ({...oldCanvas, [originalId]: $selectedColorId}))
     }
   }
 
   const handleClick = () => {
-    if($step != "painting" || isPreview) return
-    
-    if($toolMode === 'selection') {
+    if($step !== "painting" || isPreview) return
+
+    const currentToolMode = $toolMode
+
+    if(currentToolMode === 'selection') {
       // Disable selection for raw stitch
       if(stitchType === 'raw') {
         return
@@ -83,7 +90,7 @@
           selectedBeads.add(originalId)
         }
       }
-    } else if($toolMode === 'paint' || $toolMode === 'eraser') {
+    } else if(currentToolMode === 'paint' || currentToolMode === 'eraser') {
       // Paint or eraser mode
       paint()
       history.commit($canvasColors)
@@ -91,9 +98,11 @@
   }
   
   const handleMouseEnter = (e) => {
-    if($step != "painting" || isPreview) return
-    
-    if($toolMode === 'selection') {
+    if($step !== "painting" || isPreview) return
+
+    const currentToolMode = $toolMode
+
+    if(currentToolMode === 'selection') {
       // Disable selection for raw stitch
       if(stitchType === 'raw') {
         return
@@ -104,7 +113,7 @@
           selectedBeads.add(originalId)
         }
       }
-    } else if($toolMode === 'paint' || $toolMode === 'eraser') {
+    } else if(currentToolMode === 'paint' || currentToolMode === 'eraser') {
       // Paint or eraser mode
       if(e.buttons === 1) paint()
     }

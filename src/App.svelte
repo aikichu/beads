@@ -12,8 +12,8 @@
 	let gridSize = 20
 	let layoutRotation = 90
 	let stitchType = 'peyote' // 'peyote' for vertical, 'brick' for horizontal, 'square' for grid
-	$: painting = $step == 'painting'
-	$: configuring = $step == 'configuring'
+	$: painting = $step === 'painting'
+	$: configuring = $step === 'configuring'
 </script>
 
 <main class:painting class:configuring>
