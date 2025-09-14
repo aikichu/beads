@@ -93,20 +93,22 @@ function applyDelta(canvas, delta, reverse = false) {
  * @returns {Object} History store with undo/redo functionality
  */
 export function createDeltaHistory(initialCanvas = {}) {
-  const history = writable({
+  const internalState = writable({
     baseState: initialCanvas,
     deltas: [],
-    cursor: 0
+    cursor: 0,
+    canUndo: false,
+    canRedo: false
   })
 
   // Keep track of current canvas state for efficiency
   let currentState = initialCanvas
 
   return {
-    subscribe: history.subscribe,
+    subscribe: internalState.subscribe,
 
     commit: (newCanvas) => {
-      history.update(h => {
+      internalState.update(h => {
         // Create delta from current state to new state
         const delta = createDelta(currentState, newCanvas)
 
@@ -138,35 +140,49 @@ export function createDeltaHistory(initialCanvas = {}) {
           return {
             baseState: compactedState,
             deltas: newDeltas.slice(compactCount),
-            cursor: newDeltas.length - compactCount
+            cursor: newDeltas.length - compactCount,
+            canUndo: newDeltas.length - compactCount > 0,
+            canRedo: false
           }
         }
 
         return {
           ...h,
           deltas: newDeltas,
-          cursor: newDeltas.length
+          cursor: newDeltas.length,
+          canUndo: newDeltas.length > 0,
+          canRedo: false
         }
       })
     },
 
     undo: () => {
-      const h = get(history)
+      const h = get(internalState)
       if (h.cursor > 0) {
         // Apply delta in reverse
         currentState = applyDelta(currentState, h.deltas[h.cursor - 1], true)
-        history.update(h => ({ ...h, cursor: h.cursor - 1 }))
+        internalState.update(h => ({
+          ...h,
+          cursor: h.cursor - 1,
+          canUndo: h.cursor - 1 > 0,
+          canRedo: true
+        }))
         return currentState
       }
       return currentState
     },
 
     redo: () => {
-      const h = get(history)
+      const h = get(internalState)
       if (h.cursor < h.deltas.length) {
         // Apply delta forward
         currentState = applyDelta(currentState, h.deltas[h.cursor])
-        history.update(h => ({ ...h, cursor: h.cursor + 1 }))
+        internalState.update(h => ({
+          ...h,
+          cursor: h.cursor + 1,
+          canUndo: true,
+          canRedo: h.cursor + 1 < h.deltas.length
+        }))
         return currentState
       }
       return currentState
@@ -174,7 +190,7 @@ export function createDeltaHistory(initialCanvas = {}) {
 
     getCurrentState: () => {
       // Reconstruct current state from base + deltas
-      const h = get(history)
+      const h = get(internalState)
       let state = h.baseState
 
       for (let i = 0; i < h.cursor; i++) {
@@ -187,23 +203,25 @@ export function createDeltaHistory(initialCanvas = {}) {
 
     reset: () => {
       const emptyCanvas = {}
-      history.set({
+      internalState.set({
         baseState: emptyCanvas,
         deltas: [],
-        cursor: 0
+        cursor: 0,
+        canUndo: false,
+        canRedo: false
       })
       currentState = emptyCanvas
     },
 
     // Utility getters
     get canUndo() {
-      const h = get(history)
-      return h.cursor > 0
+      const h = get(internalState)
+      return h.canUndo
     },
 
     get canRedo() {
-      const h = get(history)
-      return h.cursor < h.deltas.length
+      const h = get(internalState)
+      return h.canRedo
     }
   }
 }

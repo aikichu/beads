@@ -20,7 +20,7 @@
 	<Logo />
 	<ConfigPanel bind:gridSize bind:layoutRotation bind:stitchType />
 	{#if painting}
-		<PaintingToolbox {gridSize} />
+		<PaintingToolbox />
 	{/if}
 
 	<Workspace>

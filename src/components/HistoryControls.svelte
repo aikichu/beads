@@ -11,8 +11,9 @@
     canvasColors.set(newState)
   }
 
-  $: canUndo = history.canUndo
-  $: canRedo = history.canRedo
+  // Subscribe to history state
+  $: canUndo = $history.canUndo || false
+  $: canRedo = $history.canRedo || false
 </script>
 
 <div class="history-controls">

@@ -1,6 +1,6 @@
 <script>
   import PaintingToolboxGrid from './PaintingToolboxGrid.svelte'
-  import { colorPalette, selectedColorId, history, canvasColors, step, eraserMode } from './stores.js'
+  import { colorPalette, selectedColorId, eraserMode } from './stores.js'
   
 
   $: selectedColor = $colorPalette[$selectedColorId]
@@ -10,17 +10,8 @@
     }
   }
 
-  $: canUndo = $history.cursor > 0
-  $: canRedo = $history.cursor < $history.versions.length - 1
-
-  const handleClickUndo = () => {
-    history.undo()
-    canvasColors.set($history.versions[$history.cursor])
-  }
-  const handleClickRedo = () => {
-    history.redo()
-    canvasColors.set($history.versions[$history.cursor])
-  }
+  // Remove history-related code since it's now handled by HistoryControls component
+  // History functionality is available in ToolPanel through HistoryControls
 
 </script>
 
