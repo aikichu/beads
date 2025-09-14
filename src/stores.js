@@ -1,6 +1,8 @@
-import { writable, derived } from 'svelte/store';
+import { writable, derived } from 'svelte/store'
 import { areEqual } from './utils.js'
 import { SYMBOL_POOL, DEFAULT_COLOR_PALETTE, ZOOM_CONFIG, TOOL_MODES, APP_STEPS } from './constants.js'
+import { createStore, createToggleStore, createSelectionStore, createPositionStore } from './storeFactory.js'
+import { createDeltaHistory } from './deltaHistory.js'
 
 const defaultSelectedColorID = () => 0
 
@@ -14,160 +16,41 @@ const defaultColorPalette = () => (
 const defaultCanvas = () => ({})
 const defaultHistory = () => ({cursor: 0, versions:[defaultCanvas()]})
 
-const createStep = () => {
-  const { subscribe, update, set } = writable(APP_STEPS.CONFIGURING)
+const createStep = () => createStore(APP_STEPS.CONFIGURING, {
+  setPainting: function() { this.set(APP_STEPS.PAINTING) },
+  setConfiguring: function() { this.set(APP_STEPS.CONFIGURING) }
+})
 
-  return {
-    subscribe,
-    update,
-    setPainting: () => set(APP_STEPS.PAINTING),
-    setConfiguring: () => set(APP_STEPS.CONFIGURING)
-  }
-}
+const createSelectedColorID = () => createStore(defaultSelectedColorID())
 
-const createSelectedColorID = () => {
-  const { subscribe, update, set } = writable(defaultSelectedColorID())
+const createEraserMode = () => createToggleStore(false)
 
-  return {
-    subscribe,
-    update,
-    set,
-    reset: () => set(defaultSelectedColorID())
-  }
-}
+const createLegendVisible = () => createToggleStore(true)
 
-const createEraserMode = () => {
-  const { subscribe, update, set } = writable(false)
+const createZoomLevel = () => createStore(1, {
+  zoomIn: function() { this.update(level => Math.min(level * ZOOM_CONFIG.STEP, ZOOM_CONFIG.MAX)) },
+  zoomOut: function() { this.update(level => Math.max(level / ZOOM_CONFIG.STEP, ZOOM_CONFIG.MIN)) }
+})
 
-  return {
-    subscribe,
-    update,
-    set,
-    toggle: () => update(mode => !mode),
-    reset: () => set(false)
-  }
-}
+const createGridVisible = () => createToggleStore(true)
 
-const createLegendVisible = () => {
-  const { subscribe, update, set } = writable(true)
+const createToolMode = () => createStore(TOOL_MODES.PAINT, {
+  setPaint: function() { this.set(TOOL_MODES.PAINT) },
+  setEraser: function() { this.set(TOOL_MODES.ERASER) },
+  setSelection: function() { this.set(TOOL_MODES.SELECTION) },
+  setGrid: function() { this.set(TOOL_MODES.GRID) }
+})
 
-  return {
-    subscribe,
-    update,
-    set,
-    toggle: () => update(visible => !visible),
-    reset: () => set(true)
-  }
-}
+const createSelectedBeads = () => createSelectionStore()
 
-const createZoomLevel = () => {
-  const { subscribe, update, set } = writable(1)
+const createMoveOffset = () => createPositionStore()
 
-  return {
-    subscribe,
-    update,
-    set,
-    zoomIn: () => update(level => Math.min(level * ZOOM_CONFIG.STEP, ZOOM_CONFIG.MAX)),
-    zoomOut: () => update(level => Math.max(level / ZOOM_CONFIG.STEP, ZOOM_CONFIG.MIN)),
-    reset: () => set(1)
-  }
-}
+const createColorPalette = () => createStore(defaultColorPalette())
 
-const createGridVisible = () => {
-  const { subscribe, update, set } = writable(true)
+const createCanvasColors = () => createStore(defaultCanvas())
 
-  return {
-    subscribe,
-    update,
-    set,
-    toggle: () => update(visible => !visible),
-    reset: () => set(true)
-  }
-}
-
-const createToolMode = () => {
-  const { subscribe, update, set } = writable(TOOL_MODES.PAINT)
-
-  return {
-    subscribe,
-    update,
-    set,
-    setPaint: () => set(TOOL_MODES.PAINT),
-    setEraser: () => set(TOOL_MODES.ERASER),
-    setSelection: () => set(TOOL_MODES.SELECTION),
-    setGrid: () => set(TOOL_MODES.GRID),
-    reset: () => set(TOOL_MODES.PAINT)
-  }
-}
-
-const createSelectedBeads = () => {
-  const { subscribe, update, set } = writable(new Set())
-
-  return {
-    subscribe,
-    update,
-    set,
-    add: (beadId) => update(selected => new Set([...selected, beadId])),
-    remove: (beadId) => update(selected => {
-      const newSet = new Set(selected)
-      newSet.delete(beadId)
-      return newSet
-    }),
-    clear: () => set(new Set()),
-    reset: () => set(new Set())
-  }
-}
-
-const createMoveOffset = () => {
-  const { subscribe, update, set } = writable({x: 0, y: 0})
-
-  return {
-    subscribe,
-    update,
-    set,
-    move: (dx, dy) => update(offset => ({x: offset.x + dx, y: offset.y + dy})),
-    reset: () => set({x: 0, y: 0})
-  }
-}
-
-const createColorPalette = () => {
-  const { subscribe, update, set } = writable(defaultColorPalette())
-
-  return {
-    subscribe,
-    update,
-    set,
-    reset: () => set(defaultColorPalette())
-  }
-}
-
-const createCanvasColors = () => {
-  const { subscribe, update, set } = writable(defaultCanvas())
-
-  return {
-    subscribe,
-    update,
-    set,
-    reset: () => set(defaultCanvas()),
-  }
-}
-
-const createHistory = () => {
-  const { subscribe, update, set } = writable(defaultHistory())
-
-  return {
-    subscribe,
-    commit: (newData) => update((history) => {
-      const newCanvas = {...(history.versions[history.cursor]), ...newData}
-
-      if(areEqual(history.versions[history.cursor],newCanvas)) return history
-      return {cursor: history.cursor+1, versions: [...history.versions.slice(0, history.cursor+1), newCanvas]}
-    }),
-    undo: () => update((history) => (history.cursor === 0 ? history : {...history, cursor: history.cursor - 1})),
-    redo: () => update((history) => (history.cursor === history.versions.length - 1 ? history : {...history, cursor: history.cursor + 1})),
-    reset: () => set(defaultHistory())
-  }
-}
+// Use delta-based history for better memory efficiency
+const createHistory = () => createDeltaHistory(defaultCanvas())
 
 export const selectedColorId = createSelectedColorID()
 export const eraserMode = createEraserMode()

@@ -2,17 +2,17 @@
   import { history, canvasColors } from '../stores.js'
 
   const handleUndo = () => {
-    history.undo()
-    canvasColors.set($history.versions[$history.cursor])
+    const newState = history.undo()
+    canvasColors.set(newState)
   }
 
   const handleRedo = () => {
-    history.redo()
-    canvasColors.set($history.versions[$history.cursor])
+    const newState = history.redo()
+    canvasColors.set(newState)
   }
 
-  $: canUndo = $history.cursor > 0
-  $: canRedo = $history.cursor < $history.versions.length - 1
+  $: canUndo = history.canUndo
+  $: canRedo = history.canRedo
 </script>
 
 <div class="history-controls">
