@@ -77,90 +77,50 @@
         // In paint mode, track that a touch is active for continuous painting
         isTouchActive = true
         
-        // Also handle the initial touch painting
-        const rect = svgElement.getBoundingClientRect()
-        const x = touch.clientX - rect.left
-        const y = touch.clientY - rect.top
+        // Also handle the initial touch painting using elementFromPoint
+        const touch = e.touches[0]
+        const element = document.elementFromPoint(touch.clientX, touch.clientY)
         
-        // Convert to SVG coordinates
-        const svgPoint = svgElement.createSVGPoint()
-        svgPoint.x = x
-        svgPoint.y = y
-        const ctm = svgElement.getScreenCTM().inverse()
-        const point = svgPoint.matrixTransform(ctm)
-        
-        // Convert from SVG coordinates to world coordinates
-        const worldX = (point.x - $panOffset.x) / $zoomLevel
-        const worldY = (point.y - $panOffset.y) / $zoomLevel
-        
-        // Find the bead at this position (check main beads first, then fringe beads)
-        let bead = beads.find(b => {
-          const beadX = b.x
-          const beadY = b.y
-          const beadWidth = BEAD_WIDTH
-          const beadHeight = BEAD_HEIGHT
+        if (element && element.id && element.tagName === 'ellipse' || element.tagName === 'circle' || element.tagName === 'rect') {
+          // Found a bead element, paint it
+          const beadId = element.id
+          const currentToolMode = $toolMode
           
-          return worldX >= beadX && worldX <= beadX + beadWidth &&
-                 worldY >= beadY && worldY <= beadY + beadHeight
-        })
-        
-        // If no main bead found, check fringe beads
-        if (!bead) {
-          bead = fringeBeads.find(b => {
-            const beadX = b.x
-            const beadY = b.y
-            const beadWidth = BEAD_WIDTH
-            const beadHeight = BEAD_HEIGHT
-            
-            return worldX >= beadX && worldX <= beadX + beadWidth &&
-                   worldY >= beadY && worldY <= beadY + beadHeight
-          })
-        }
-        
-        if (bead && bead.id) {
-          // Debug logging
-          console.log('Touch painting:', {
+          console.log('Touch painting element:', {
             touchX: touch.clientX,
             touchY: touch.clientY,
-            svgX: x,
-            svgY: y,
-            pointX: point.x,
-            pointY: point.y,
-            worldX,
-            worldY,
-            beadX: bead.x,
-            beadY: bead.y,
-            beadWidth: bead.width,
-            beadHeight: bead.height
+            elementId: beadId,
+            elementTag: element.tagName
           })
           
-          // Paint the bead
-          const currentToolMode = $toolMode
           if (currentToolMode === 'paint') {
-            if (bead.isFringe) {
+            // Check if it's a fringe bead by looking at the bead data
+            const bead = beads.find(b => b.id === beadId) || fringeBeads.find(b => b.id === beadId)
+            if (bead && bead.isFringe) {
               // Handle fringe bead painting
-              fringeColors.update((oldFringeColors) => ({...oldFringeColors, [bead.id]: $selectedColorId}))
+              fringeColors.update((oldFringeColors) => ({...oldFringeColors, [beadId]: $selectedColorId}))
             } else {
               // Handle main canvas bead painting
-              $canvasColors[bead.id] = $selectedColorId
+              $canvasColors[beadId] = $selectedColorId
             }
           } else if (currentToolMode === 'eraser') {
             // Eraser mode: remove color from this bead
-            if (bead.isFringe) {
+            const bead = beads.find(b => b.id === beadId) || fringeBeads.find(b => b.id === beadId)
+            if (bead && bead.isFringe) {
               fringeColors.update((oldFringeColors) => {
                 const newFringeColors = {...oldFringeColors}
-                delete newFringeColors[bead.id]
+                delete newFringeColors[beadId]
                 return newFringeColors
               })
             } else {
               canvasColors.update((oldCanvas) => {
                 const newCanvas = {...oldCanvas}
-                delete newCanvas[bead.id]
+                delete newCanvas[beadId]
                 return newCanvas
               })
             }
           }
-          lastPaintedBead = bead.id
+          lastPaintedBead = beadId
         }
       }
     } else if (e.touches.length === 2) {
@@ -214,91 +174,50 @@
         
         lastPanPoint = { x: touch.clientX, y: touch.clientY }
       } else if (!panMode && isTouchActive && $step === "painting") {
-        // In paint mode with active touch, handle continuous painting
+        // In paint mode with active touch, handle continuous painting using elementFromPoint
         const touch = e.touches[0]
-        const rect = svgElement.getBoundingClientRect()
-        const x = touch.clientX - rect.left
-        const y = touch.clientY - rect.top
+        const element = document.elementFromPoint(touch.clientX, touch.clientY)
         
-        // Convert to SVG coordinates
-        const svgPoint = svgElement.createSVGPoint()
-        svgPoint.x = x
-        svgPoint.y = y
-        const ctm = svgElement.getScreenCTM().inverse()
-        const point = svgPoint.matrixTransform(ctm)
-        
-        // Convert from SVG coordinates to world coordinates
-        const worldX = (point.x - $panOffset.x) / $zoomLevel
-        const worldY = (point.y - $panOffset.y) / $zoomLevel
-        
-        // Find the bead at this position (check main beads first, then fringe beads)
-        let bead = beads.find(b => {
-          const beadX = b.x
-          const beadY = b.y
-          const beadWidth = BEAD_WIDTH
-          const beadHeight = BEAD_HEIGHT
+        if (element && element.id && (element.tagName === 'ellipse' || element.tagName === 'circle' || element.tagName === 'rect') && element.id !== lastPaintedBead) {
+          // Found a bead element, paint it
+          const beadId = element.id
+          const currentToolMode = $toolMode
           
-          return worldX >= beadX && worldX <= beadX + beadWidth &&
-                 worldY >= beadY && worldY <= beadY + beadHeight
-        })
-        
-        // If no main bead found, check fringe beads
-        if (!bead) {
-          bead = fringeBeads.find(b => {
-            const beadX = b.x
-            const beadY = b.y
-            const beadWidth = BEAD_WIDTH
-            const beadHeight = BEAD_HEIGHT
-            
-            return worldX >= beadX && worldX <= beadX + beadWidth &&
-                   worldY >= beadY && worldY <= beadY + beadHeight
-          })
-        }
-        
-        if (bead && bead.id && bead.id !== lastPaintedBead) {
-          // Debug logging
-          console.log('Touch move painting:', {
+          console.log('Touch move painting element:', {
             touchX: touch.clientX,
             touchY: touch.clientY,
-            svgX: x,
-            svgY: y,
-            pointX: point.x,
-            pointY: point.y,
-            worldX,
-            worldY,
-            beadX: bead.x,
-            beadY: bead.y,
-            beadWidth: bead.width,
-            beadHeight: bead.height
+            elementId: beadId,
+            elementTag: element.tagName
           })
           
-          // Paint the bead
-          const currentToolMode = $toolMode
           if (currentToolMode === 'paint') {
-            if (bead.isFringe) {
+            // Check if it's a fringe bead by looking at the bead data
+            const bead = beads.find(b => b.id === beadId) || fringeBeads.find(b => b.id === beadId)
+            if (bead && bead.isFringe) {
               // Handle fringe bead painting
-              fringeColors.update((oldFringeColors) => ({...oldFringeColors, [bead.id]: $selectedColorId}))
+              fringeColors.update((oldFringeColors) => ({...oldFringeColors, [beadId]: $selectedColorId}))
             } else {
               // Handle main canvas bead painting
-              $canvasColors[bead.id] = $selectedColorId
+              $canvasColors[beadId] = $selectedColorId
             }
           } else if (currentToolMode === 'eraser') {
             // Eraser mode: remove color from this bead
-            if (bead.isFringe) {
+            const bead = beads.find(b => b.id === beadId) || fringeBeads.find(b => b.id === beadId)
+            if (bead && bead.isFringe) {
               fringeColors.update((oldFringeColors) => {
                 const newFringeColors = {...oldFringeColors}
-                delete newFringeColors[bead.id]
+                delete newFringeColors[beadId]
                 return newFringeColors
               })
             } else {
               canvasColors.update((oldCanvas) => {
                 const newCanvas = {...oldCanvas}
-                delete newCanvas[bead.id]
+                delete newCanvas[beadId]
                 return newCanvas
               })
             }
           }
-          lastPaintedBead = bead.id
+          lastPaintedBead = beadId
         }
       }
     } else if (e.touches.length === 2) {
