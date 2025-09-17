@@ -40,4 +40,41 @@
   .reset-button:hover {
     background-color: #c82333;
   }
+
+  /* Responsive design for narrow screens */
+  @media (max-width: 1024px) {
+    .reset-control {
+      padding: 0.3rem;
+    }
+
+    .reset-button {
+      width: 2.2rem;
+      height: 2.2rem;
+      font-size: 1rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .reset-control {
+      padding: 0.2rem;
+    }
+
+    .reset-button {
+      width: 2rem;
+      height: 2rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .reset-control {
+      padding: 0.1rem;
+    }
+
+    .reset-button {
+      width: 1.8rem;
+      height: 1.8rem;
+      font-size: 0.8rem;
+    }
+  }
 </style>

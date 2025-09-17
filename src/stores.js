@@ -29,8 +29,13 @@ const createLegendVisible = () => createToggleStore(true)
 
 const createZoomLevel = () => createStore(1, {
   zoomIn: function() { this.update(level => Math.min(level * ZOOM_CONFIG.STEP, ZOOM_CONFIG.MAX)) },
-  zoomOut: function() { this.update(level => Math.max(level / ZOOM_CONFIG.STEP, ZOOM_CONFIG.MIN)) }
+  zoomOut: function() { this.update(level => Math.max(level / ZOOM_CONFIG.STEP, ZOOM_CONFIG.MIN)) },
+  set: function(level) { this.update(() => Math.max(ZOOM_CONFIG.MIN, Math.min(level, ZOOM_CONFIG.MAX))) }
 })
+
+const createPanOffset = () => createPositionStore()
+
+const createIsPanning = () => createToggleStore(false)
 
 const createGridVisible = () => createToggleStore(true)
 
@@ -45,6 +50,11 @@ const createSelectedBeads = () => createSelectionStore()
 
 const createMoveOffset = () => createPositionStore()
 
+// Fringe stores
+const createFringeVisible = () => createToggleStore(false)
+const createFringeLength = () => createStore(3) // Global fringe length (1-20)
+const createFringeColors = () => createStore({}) // Individual fringe bead colors {fringeBeadId: colorId}
+
 const createColorPalette = () => createStore(defaultColorPalette())
 
 const createCanvasColors = () => createStore(defaultCanvas())
@@ -56,10 +66,15 @@ export const selectedColorId = createSelectedColorID()
 export const eraserMode = createEraserMode()
 export const legendVisible = createLegendVisible()
 export const zoomLevel = createZoomLevel()
+export const panOffset = createPanOffset()
+export const isPanning = createIsPanning()
 export const gridVisible = createGridVisible()
 export const toolMode = createToolMode()
 export const selectedBeads = createSelectedBeads()
 export const moveOffset = createMoveOffset()
+export const fringeVisible = createFringeVisible()
+export const fringeLength = createFringeLength()
+export const fringeColors = createFringeColors()
 export const canvasColors = createCanvasColors()
 export const colorPalette = createColorPalette()
 export const step = createStep()
@@ -67,12 +82,19 @@ export const history = createHistory()
 
 // Derived store for color legend (color, symbol, count)
 export const colorLegend = derived(
-  [canvasColors, colorPalette],
-  ([$canvasColors, $colorPalette]) => {
+  [canvasColors, fringeColors, colorPalette],
+  ([$canvasColors, $fringeColors, $colorPalette]) => {
     const colorCounts = {}
     
-    // Count usage of each color
+    // Count usage of each color in main canvas
     Object.values($canvasColors).forEach(colorId => {
+      if (colorId !== undefined) {
+        colorCounts[colorId] = (colorCounts[colorId] || 0) + 1
+      }
+    })
+    
+    // Count usage of each color in fringe beads
+    Object.values($fringeColors).forEach(colorId => {
       if (colorId !== undefined) {
         colorCounts[colorId] = (colorCounts[colorId] || 0) + 1
       }

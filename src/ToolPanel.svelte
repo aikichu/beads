@@ -1,13 +1,16 @@
 <script>
-  import { toolMode, gridVisible, selectedBeads } from './stores.js'
+  import { toolMode, gridVisible, selectedBeads, fringeVisible } from './stores.js'
   import ZoomControls from './components/ZoomControls.svelte'
   import HistoryControls from './components/HistoryControls.svelte'
   import SelectionControls from './components/SelectionControls.svelte'
   import ResetButton from './components/ResetButton.svelte'
+  import FringeControls from './components/FringeControls.svelte'
 
   export let gridSize
   export let stitchType = 'offset'
   export let layoutRotation = 0
+  export let togglePanMode = () => {}
+  export let panMode = false
 
   const handleToolSelect = (tool) => {
     if (tool === 'grid') {
@@ -71,6 +74,18 @@
     >
       🏁
     </button>
+    
+    {#if stitchType === 'brick'}
+      <button 
+        class="tool-button" 
+        class:active={$fringeVisible}
+        on:click={() => fringeVisible.toggle()}
+        aria-label="Fringe toggle"
+        title="Toggle fringe visibility for brick stitch"
+      >
+        🧵
+      </button>
+    {/if}
   </div>
 
   <!-- Move controls - only show when selection tool is active -->
@@ -79,13 +94,18 @@
   {/if}
 
   <!-- Zoom controls -->
-  <ZoomControls />
+  <ZoomControls bind:togglePanMode bind:panMode />
 
   <!-- History controls -->
   <HistoryControls />
 
   <!-- Reset control -->
   <ResetButton />
+
+  <!-- Fringe controls - only show when fringe is visible and stitch type is brick -->
+  {#if $fringeVisible && stitchType === 'brick'}
+    <FringeControls {stitchType} />
+  {/if}
 </div>
 
 <style>
@@ -98,6 +118,7 @@
     border-radius: 0.5rem;
     border: 2px solid #e9ecef;
     min-width: 120px;
+    max-width: 100%;
   }
 
   .tool-buttons {
@@ -130,5 +151,59 @@
     border-color: #007bff;
     background-color: #e3f2fd;
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  }
+
+  /* Responsive design for narrow screens */
+  @media (max-width: 1024px) {
+    .tool-panel {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      min-width: auto;
+      padding: 0.5rem;
+      gap: 0.5rem;
+    }
+
+    .tool-buttons {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+
+    .tool-button {
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 1.2rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .tool-panel {
+      padding: 0.3rem;
+      gap: 0.3rem;
+    }
+
+    .tool-buttons {
+      gap: 0.2rem;
+    }
+
+    .tool-button {
+      width: 2.2rem;
+      height: 2.2rem;
+      font-size: 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .tool-panel {
+      padding: 0.2rem;
+      gap: 0.2rem;
+    }
+
+    .tool-button {
+      width: 2rem;
+      height: 2rem;
+      font-size: 0.9rem;
+    }
   }
 </style>

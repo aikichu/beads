@@ -7,21 +7,22 @@
   export let shape = 'rectangle'
   export let isPreview = false
   export let stitchType = 'offset'
+  export let isFringe = false
 
   // Only import stores that are actually needed
-  import { colorPalette, canvasColors, selectedColorId, history, step, legendVisible, gridVisible, toolMode, selectedBeads } from './stores.js'
+  import { colorPalette, canvasColors, selectedColorId, history, step, legendVisible, gridVisible, toolMode, selectedBeads, fringeColors, isPanning } from './stores.js'
 
   $: originalId = isPreview ? id.replace('preview_', '') : id
-  $: colorId = $canvasColors[originalId]
-  $: color = (colorId !== undefined) ? $colorPalette[colorId] : {h: 0, s: 100, l: 100}
+  $: beadColorId = isFringe ? $fringeColors[originalId] : $canvasColors[originalId]
+  $: color = (beadColorId !== undefined) ? $colorPalette[beadColorId] : {h: 0, s: 100, l: 100}
   $: fill = `hsl(${color.h}, ${color.s}%, ${color.l}%)`
   $: symbol = color.symbol || ''
   $: isSelected = $selectedBeads.has(originalId)
-  $: isColored = colorId !== undefined
+  $: isColored = beadColorId !== undefined
   
   // Calculate symbol color based on bead color brightness
   $: symbolColor = (() => {
-    if (colorId === undefined) return 'black' // Default for uncolored beads
+    if (beadColorId === undefined) return 'black' // Default for uncolored beads
     
     // Convert HSL to RGB for brightness calculation
     const h = color.h / 360
@@ -59,21 +60,37 @@
     // Use get() to read current value without subscribing
     const currentToolMode = $toolMode
 
-    if (currentToolMode === 'eraser') {
-      // Eraser mode: remove color from this bead
-      canvasColors.update((oldCanvas) => {
-        const newCanvas = {...oldCanvas}
-        delete newCanvas[originalId]
-        return newCanvas
-      })
-    } else if (currentToolMode === 'paint') {
-      // Paint mode: apply selected color to this bead
-      canvasColors.update((oldCanvas) => ({...oldCanvas, [originalId]: $selectedColorId}))
+    if (isFringe) {
+      // Handle fringe bead painting
+      if (currentToolMode === 'eraser') {
+        // Eraser mode: remove color from this fringe bead
+        fringeColors.update((oldFringeColors) => {
+          const newFringeColors = {...oldFringeColors}
+          delete newFringeColors[originalId]
+          return newFringeColors
+        })
+      } else if (currentToolMode === 'paint') {
+        // Paint mode: apply selected color to this fringe bead
+        fringeColors.update((oldFringeColors) => ({...oldFringeColors, [originalId]: $selectedColorId}))
+      }
+    } else {
+      // Handle main canvas bead painting
+      if (currentToolMode === 'eraser') {
+        // Eraser mode: remove color from this bead
+        canvasColors.update((oldCanvas) => {
+          const newCanvas = {...oldCanvas}
+          delete newCanvas[originalId]
+          return newCanvas
+        })
+      } else if (currentToolMode === 'paint') {
+        // Paint mode: apply selected color to this bead
+        canvasColors.update((oldCanvas) => ({...oldCanvas, [originalId]: $selectedColorId}))
+      }
     }
   }
 
   const handleClick = () => {
-    if($step !== "painting" || isPreview) return
+    if($step !== "painting" || isPreview || $isPanning) return
 
     const currentToolMode = $toolMode
 
@@ -98,7 +115,7 @@
   }
   
   const handleMouseEnter = (e) => {
-    if($step !== "painting" || isPreview) return
+    if($step !== "painting" || isPreview || $isPanning) return
 
     const currentToolMode = $toolMode
 
@@ -118,6 +135,30 @@
       if(e.buttons === 1) paint()
     }
   }
+
+  const handleTouchStart = (e) => {
+    if($step !== "painting" || isPreview) return
+    
+    // Only handle touch if not in pan mode (pan mode is handled by Canvas)
+    const currentToolMode = $toolMode
+    
+    if(currentToolMode === 'paint' || currentToolMode === 'eraser') {
+      e.preventDefault() // Prevent default to avoid conflicts
+      paint()
+    }
+  }
+
+  const handleTouchMove = (e) => {
+    if($step !== "painting" || isPreview) return
+    
+    // Only handle touch if not in pan mode (pan mode is handled by Canvas)
+    const currentToolMode = $toolMode
+    
+    if(currentToolMode === 'paint' || currentToolMode === 'eraser') {
+      e.preventDefault() // Prevent default to avoid conflicts
+      paint()
+    }
+  }
 </script>
 
 {#if shape === 'oval-ring'}
@@ -129,14 +170,16 @@
     rx={width/2}
     ry={height/2}
     fill="none"
-    stroke={colorId !== undefined ? fill : ($gridVisible ? 'black' : 'none')}
+    stroke={beadColorId !== undefined ? fill : ($gridVisible ? 'black' : 'none')}
     stroke-width={isSelected ? "0.4" : "0.2"}
     stroke-dasharray={isSelected ? "0.5,0.5" : "none"}
     opacity={isPreview ? "0.6" : "1"}
     on:click={handleClick}
     on:mouseenter={handleMouseEnter}
+    on:touchstart={handleTouchStart}
+    on:touchmove={handleTouchMove}
   />
-  {#if colorId !== undefined && symbol && $legendVisible}
+  {#if beadColorId !== undefined && symbol && $legendVisible}
     <text
       x={x + width/2}
       y={y + height/2 + 0.1}
@@ -155,15 +198,17 @@
     cx={x + width/2}
     cy={y + height/2}
     r={Math.min(width, height) / 2}
-    fill={colorId !== undefined ? fill : 'white'}
+    fill={beadColorId !== undefined ? fill : 'white'}
     stroke={isSelected ? '#9C27B0' : ($gridVisible ? 'black' : 'none')}
     stroke-width={isSelected ? "0.3" : "0.1"}
     stroke-dasharray={isSelected ? "0.5,0.5" : "none"}
     opacity={isPreview ? "0.6" : "1"}
     on:click={handleClick}
     on:mouseenter={handleMouseEnter}
+    on:touchstart={handleTouchStart}
+    on:touchmove={handleTouchMove}
   />
-  {#if colorId !== undefined && symbol && $legendVisible}
+  {#if beadColorId !== undefined && symbol && $legendVisible}
     <text
       x={x + width/2}
       y={y + height/2 + 0.1}
@@ -185,8 +230,10 @@
     opacity={isPreview ? "0.6" : "1"}
     on:click={handleClick}
     on:mouseenter={handleMouseEnter}
+    on:touchstart={handleTouchStart}
+    on:touchmove={handleTouchMove}
   />
-  {#if colorId !== undefined && symbol && $legendVisible}
+  {#if beadColorId !== undefined && symbol && $legendVisible}
     <text
       x={x + width/2}
       y={y + height/2 + 0.1}

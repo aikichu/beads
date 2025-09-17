@@ -172,6 +172,50 @@ export function generateOffsetBeads(size, h, w, totalH, totalW, angle) {
   }
 }
 
+// Fringe bead generator for brick stitch
+export function generateFringeBeads(fringeVisible, fringeLength, mainBeads, size, h, w, angle) {
+  if (!fringeVisible || fringeLength <= 0) {
+    return []
+  }
+
+  const fringeBeads = []
+  let fringeId = 10000 // Start fringe IDs from 10000 to avoid conflicts
+
+  // Get all bottom row bead IDs
+  const bottomRowBeadIds = getBottomRowBeadIds(size)
+
+  bottomRowBeadIds.forEach(beadId => {
+    const mainBead = mainBeads.find(bead => bead.id == beadId)
+    if (!mainBead) return
+
+    const startX = mainBead.x + mainBead.width / 2
+    const startY = mainBead.y + mainBead.height
+
+    // Generate fringe beads vertically downward for all bottom row beads
+    for (let i = 0; i < fringeLength; i++) {
+      fringeBeads.push({
+        id: `fringe_${fringeId++}`,
+        x: startX - w / 2,
+        y: startY + (i * w),
+        width: w,
+        height: h,
+        isFringe: true,
+        parentBeadId: beadId,
+        fringeIndex: i
+        // No default colorId - will be handled by Bead component
+      })
+    }
+  })
+
+  return fringeBeads
+}
+
+// Helper function to get bottom row bead IDs for brick stitch
+export function getBottomRowBeadIds(size) {
+  const bottomRowStart = (size - 1) * size
+  return Array.from({ length: size }, (_, i) => bottomRowStart + i)
+}
+
 // Main bead generator function
 export function makeBeads(size, h, w, totalH, totalW, angle, stitch) {
   switch(stitch) {

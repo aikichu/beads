@@ -27,5 +27,30 @@
 
   .cell-colors { grid-area: colors; }
 
-  
+  /* Responsive design for narrow screens */
+  @media (max-width: 1024px) {
+    .grid {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto auto;
+      grid-template-areas:
+        "colors"
+        "hue-slider"
+        "sat-slider"
+        "light-slider";
+      gap: 0.5em;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .grid {
+      gap: 0.3em;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .grid {
+      gap: 0.2em;
+    }
+  }
 </style>

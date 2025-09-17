@@ -50,6 +50,60 @@
     grid-template-columns: 8em 8em;
   }
 
+  /* Responsive design for narrow screens */
+  @media (max-width: 1024px) {
+    .configuring {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto auto;
+      grid-template-areas:
+        "stitch-selector"
+        "label"
+        "slider"
+        "go-button";
+      gap: 0.5em;
+    }
+
+    .configuring.show-rotation {
+      grid-template-areas:
+        "stitch-selector"
+        "rotate-buttons"
+        "label"
+        "slider"
+        "go-button";
+    }
+
+    .painting {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "stitch-selector";
+    }
+
+    .painting.show-rotation {
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        "stitch-selector rotate-buttons";
+    }
+  }
+
+  @media (max-width: 768px) {
+    .configuring {
+      gap: 0.3em;
+    }
+
+    .painting.show-rotation {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "stitch-selector"
+        "rotate-buttons";
+    }
+  }
+
+  @media (max-width: 480px) {
+    .configuring {
+      gap: 0.2em;
+    }
+  }
+
   .cell{
     align-self: center;
     justify-self: center;

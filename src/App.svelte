@@ -12,6 +12,8 @@
 	let gridSize = 20
 	let layoutRotation = 90
 	let stitchType = 'peyote' // 'peyote' for vertical, 'brick' for horizontal, 'square' for grid
+	let togglePanMode = () => {}
+	let panMode = false
 	$: painting = $step === 'painting'
 	$: configuring = $step === 'configuring'
 </script>
@@ -25,9 +27,9 @@
 
 	<Workspace>
 		<div class="canvas-area">
-			<Canvas {...{gridSize, layoutRotation, stitchType}} />
+			<Canvas bind:togglePanMode bind:panMode {...{gridSize, layoutRotation, stitchType}} />
 			{#if painting}
-				<ToolPanel {gridSize} {stitchType} {layoutRotation} />
+				<ToolPanel bind:togglePanMode bind:panMode {gridSize} {stitchType} {layoutRotation} />
 			{/if}
 		</div>
 		{#if painting}
@@ -44,6 +46,7 @@
 		margin: 0;
 		width: 100%;
 		height: 100%;
+		min-height: 100vh;
 
 		display: grid;
 		grid-template-columns: 15rem 10rem 1fr 12rem;
@@ -76,6 +79,67 @@
 		margin-top: 1rem;
 	}
 
+	/* Responsive design for narrow screens */
+	@media (max-width: 1200px) {
+		main {
+			grid-template-columns: 12rem 8rem 1fr 10rem;
+			gap: 0.3em 0.3em;
+		}
+	}
+
+	@media (max-width: 1024px) {
+		main {
+			grid-template-columns: 1fr;
+			grid-template-rows: auto auto auto 1fr;
+			gap: 0.5em;
+		}
+
+		.painting {
+			grid-template-areas: 
+				"logo"
+				"config-panel"
+				"painting-toolbox"
+				"workspace";
+		}
+
+		.configuring {
+			grid-template-areas: 
+				"logo"
+				"config-panel"
+				"workspace";
+		}
+
+		.canvas-area {
+			flex-direction: column;
+			gap: 0.5rem;
+		}
+
+		.color-legend-area {
+			margin-top: 0.5rem;
+			align-self: stretch;
+		}
+	}
+
+	@media (max-width: 768px) {
+		main {
+			grid-template-rows: auto auto auto 1fr;
+			gap: 0.3em;
+			padding: 0.3em;
+		}
+
+		.canvas-area {
+			flex-direction: column;
+			gap: 0.3rem;
+		}
+	}
+
+	@media (max-width: 480px) {
+		main {
+			padding: 0.2em;
+			gap: 0.2em;
+		}
+	}
+
 	/* Prevent text selection on the entire app to avoid interference with painting/selection */
 	* {
 		user-select: none;
@@ -85,7 +149,7 @@
 	}
 
 	/* Allow text selection only for input elements and text areas */
-	input, textarea, select {
+	:global(input), :global(textarea), :global(select) {
 		user-select: text;
 		-webkit-user-select: text;
 		-moz-user-select: text;

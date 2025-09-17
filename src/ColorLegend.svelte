@@ -44,6 +44,65 @@
     max-width: 100%;
   }
 
+  /* Responsive design for narrow screens */
+  @media (max-width: 1024px) {
+    .color-legend {
+      padding: 0.5em;
+      max-height: 250px;
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .color-legend {
+      padding: 0.3em;
+      max-height: 200px;
+    }
+
+    .legend-item {
+      padding: 0.2em 0.3em;
+      gap: 0.3em;
+    }
+
+    .color-swatch {
+      width: 1em;
+      height: 1em;
+    }
+
+    .symbol {
+      font-size: 1em;
+    }
+
+    .count {
+      font-size: 0.8em;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .color-legend {
+      padding: 0.2em;
+      max-height: 150px;
+    }
+
+    .legend-item {
+      padding: 0.1em 0.2em;
+      gap: 0.2em;
+    }
+
+    .color-swatch {
+      width: 0.8em;
+      height: 0.8em;
+    }
+
+    .symbol {
+      font-size: 0.9em;
+    }
+
+    .count {
+      font-size: 0.7em;
+    }
+  }
+
   .legend-header {
     display: flex;
     justify-content: space-between;

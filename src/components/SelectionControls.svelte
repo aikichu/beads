@@ -60,6 +60,83 @@
     border: 2px solid #ffc107;
   }
 
+  /* Responsive design for narrow screens */
+  @media (max-width: 1024px) {
+    .move-controls {
+      flex-direction: row;
+      justify-content: center;
+      gap: 0.3rem;
+      padding: 0.3rem;
+    }
+
+    .move-arrows {
+      flex-direction: row;
+      gap: 0.2rem;
+    }
+
+    .move-row {
+      gap: 0.2rem;
+    }
+
+    .move-button {
+      width: 1.8rem;
+      height: 1.8rem;
+      font-size: 0.7rem;
+    }
+
+    .confirm-button {
+      width: 2.2rem;
+      height: 1.8rem;
+      font-size: 0.7rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .move-controls {
+      gap: 0.2rem;
+      padding: 0.2rem;
+    }
+
+    .move-arrows {
+      gap: 0.1rem;
+    }
+
+    .move-row {
+      gap: 0.1rem;
+    }
+
+    .move-button {
+      width: 1.6rem;
+      height: 1.6rem;
+      font-size: 0.6rem;
+    }
+
+    .confirm-button {
+      width: 2rem;
+      height: 1.6rem;
+      font-size: 0.6rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .move-controls {
+      gap: 0.1rem;
+      padding: 0.1rem;
+    }
+
+    .move-button {
+      width: 1.4rem;
+      height: 1.4rem;
+      font-size: 0.5rem;
+    }
+
+    .confirm-button {
+      width: 1.8rem;
+      height: 1.4rem;
+      font-size: 0.5rem;
+    }
+  }
+
   .move-arrows {
     display: flex;
     flex-direction: column;
