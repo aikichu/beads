@@ -248,6 +248,13 @@
     gap: 0.25rem;
   }
 
+  /* Hide pan mode toggle on desktop - only show on mobile */
+  @media (min-width: 769px) {
+    .pan-mode-toggle {
+      display: none;
+    }
+  }
+
   .pan-mode-button {
     width: 2rem;
     height: 2rem;

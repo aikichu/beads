@@ -8,6 +8,7 @@
   export let isPreview = false
   export let stitchType = 'offset'
   export let isFringe = false
+  export let isTouchActive = false
 
   // Only import stores that are actually needed
   import { colorPalette, canvasColors, selectedColorId, history, step, legendVisible, gridVisible, toolMode, selectedBeads, fringeColors, isPanning } from './stores.js'
@@ -154,10 +155,15 @@
     // Only handle touch if not in pan mode (pan mode is handled by Canvas)
     const currentToolMode = $toolMode
     
-    if(currentToolMode === 'paint' || currentToolMode === 'eraser') {
+    // Paint if touch is active (equivalent to mouse button held down)
+    if((currentToolMode === 'paint' || currentToolMode === 'eraser') && isTouchActive) {
       e.preventDefault() // Prevent default to avoid conflicts
       paint()
     }
+  }
+
+  const handleTouchEnd = (e) => {
+    // Touch end is handled by Canvas component
   }
 </script>
 
@@ -178,6 +184,7 @@
     on:mouseenter={handleMouseEnter}
     on:touchstart={handleTouchStart}
     on:touchmove={handleTouchMove}
+    on:touchend={handleTouchEnd}
   />
   {#if beadColorId !== undefined && symbol && $legendVisible}
     <text
@@ -207,6 +214,7 @@
     on:mouseenter={handleMouseEnter}
     on:touchstart={handleTouchStart}
     on:touchmove={handleTouchMove}
+    on:touchend={handleTouchEnd}
   />
   {#if beadColorId !== undefined && symbol && $legendVisible}
     <text
@@ -232,6 +240,7 @@
     on:mouseenter={handleMouseEnter}
     on:touchstart={handleTouchStart}
     on:touchmove={handleTouchMove}
+    on:touchend={handleTouchEnd}
   />
   {#if beadColorId !== undefined && symbol && $legendVisible}
     <text

@@ -1,6 +1,6 @@
 <script>
   import Bead from './Bead.svelte'
-  import { canvasColors, selectedColorId, history, step, zoomLevel, panOffset, isPanning, selectedBeads, moveOffset, fringeVisible, fringeLength, fringeColors } from './stores.js'
+  import { canvasColors, selectedColorId, history, step, zoomLevel, panOffset, isPanning, selectedBeads, moveOffset, fringeVisible, fringeLength, fringeColors, toolMode } from './stores.js'
   import { makeBeads, BEAD_WIDTH, BEAD_HEIGHT, generateFringeBeads } from './beadGenerators.js'
   import { calculatePreviewBeads } from './beadPositionUtils.js'
 
@@ -18,6 +18,7 @@
   let isPaintingMode = false
   let panMode = false // Toggle for pan mode
   let lastPaintedBead = null // Track last painted bead to avoid repainting
+  let isTouchActive = false // Track if a touch is currently active for continuous painting
 
   $: totalSideWidth = 2 * (gridSize + 1)
   $: totalSideHeight = 2 * (gridSize + 2)
@@ -72,8 +73,96 @@
         isTouchPanning = true
         isPaintingMode = false
         e.preventDefault() // Prevent default to allow panning
+      } else {
+        // In paint mode, track that a touch is active for continuous painting
+        isTouchActive = true
+        
+        // Also handle the initial touch painting
+        const rect = svgElement.getBoundingClientRect()
+        const x = touch.clientX - rect.left
+        const y = touch.clientY - rect.top
+        
+        // Convert to SVG coordinates
+        const svgPoint = svgElement.createSVGPoint()
+        svgPoint.x = x
+        svgPoint.y = y
+        const ctm = svgElement.getScreenCTM().inverse()
+        const point = svgPoint.matrixTransform(ctm)
+        
+        // Convert from SVG coordinates to world coordinates
+        const worldX = (point.x - $panOffset.x) / $zoomLevel
+        const worldY = (point.y - $panOffset.y) / $zoomLevel
+        
+        // Find the bead at this position (check main beads first, then fringe beads)
+        let bead = beads.find(b => {
+          const beadX = b.x
+          const beadY = b.y
+          const beadWidth = BEAD_WIDTH
+          const beadHeight = BEAD_HEIGHT
+          
+          return worldX >= beadX && worldX <= beadX + beadWidth &&
+                 worldY >= beadY && worldY <= beadY + beadHeight
+        })
+        
+        // If no main bead found, check fringe beads
+        if (!bead) {
+          bead = fringeBeads.find(b => {
+            const beadX = b.x
+            const beadY = b.y
+            const beadWidth = BEAD_WIDTH
+            const beadHeight = BEAD_HEIGHT
+            
+            return worldX >= beadX && worldX <= beadX + beadWidth &&
+                   worldY >= beadY && worldY <= beadY + beadHeight
+          })
+        }
+        
+        if (bead && bead.id) {
+          // Debug logging
+          console.log('Touch painting:', {
+            touchX: touch.clientX,
+            touchY: touch.clientY,
+            svgX: x,
+            svgY: y,
+            pointX: point.x,
+            pointY: point.y,
+            worldX,
+            worldY,
+            beadX: bead.x,
+            beadY: bead.y,
+            beadWidth: bead.width,
+            beadHeight: bead.height
+          })
+          
+          // Paint the bead
+          const currentToolMode = $toolMode
+          if (currentToolMode === 'paint') {
+            if (bead.isFringe) {
+              // Handle fringe bead painting
+              fringeColors.update((oldFringeColors) => ({...oldFringeColors, [bead.id]: $selectedColorId}))
+            } else {
+              // Handle main canvas bead painting
+              $canvasColors[bead.id] = $selectedColorId
+            }
+          } else if (currentToolMode === 'eraser') {
+            // Eraser mode: remove color from this bead
+            if (bead.isFringe) {
+              fringeColors.update((oldFringeColors) => {
+                const newFringeColors = {...oldFringeColors}
+                delete newFringeColors[bead.id]
+                return newFringeColors
+              })
+            } else {
+              canvasColors.update((oldCanvas) => {
+                const newCanvas = {...oldCanvas}
+                delete newCanvas[bead.id]
+                return newCanvas
+              })
+            }
+          }
+          lastPaintedBead = bead.id
+        }
       }
-      // In paint mode, do nothing - let individual beads handle their own touch events
     } else if (e.touches.length === 2) {
       // Two touches - always panning (for pan mode) or pinch zoom
       e.preventDefault()
@@ -124,8 +213,94 @@
         }))
         
         lastPanPoint = { x: touch.clientX, y: touch.clientY }
+      } else if (!panMode && isTouchActive && $step === "painting") {
+        // In paint mode with active touch, handle continuous painting
+        const touch = e.touches[0]
+        const rect = svgElement.getBoundingClientRect()
+        const x = touch.clientX - rect.left
+        const y = touch.clientY - rect.top
+        
+        // Convert to SVG coordinates
+        const svgPoint = svgElement.createSVGPoint()
+        svgPoint.x = x
+        svgPoint.y = y
+        const ctm = svgElement.getScreenCTM().inverse()
+        const point = svgPoint.matrixTransform(ctm)
+        
+        // Convert from SVG coordinates to world coordinates
+        const worldX = (point.x - $panOffset.x) / $zoomLevel
+        const worldY = (point.y - $panOffset.y) / $zoomLevel
+        
+        // Find the bead at this position (check main beads first, then fringe beads)
+        let bead = beads.find(b => {
+          const beadX = b.x
+          const beadY = b.y
+          const beadWidth = BEAD_WIDTH
+          const beadHeight = BEAD_HEIGHT
+          
+          return worldX >= beadX && worldX <= beadX + beadWidth &&
+                 worldY >= beadY && worldY <= beadY + beadHeight
+        })
+        
+        // If no main bead found, check fringe beads
+        if (!bead) {
+          bead = fringeBeads.find(b => {
+            const beadX = b.x
+            const beadY = b.y
+            const beadWidth = BEAD_WIDTH
+            const beadHeight = BEAD_HEIGHT
+            
+            return worldX >= beadX && worldX <= beadX + beadWidth &&
+                   worldY >= beadY && worldY <= beadY + beadHeight
+          })
+        }
+        
+        if (bead && bead.id && bead.id !== lastPaintedBead) {
+          // Debug logging
+          console.log('Touch move painting:', {
+            touchX: touch.clientX,
+            touchY: touch.clientY,
+            svgX: x,
+            svgY: y,
+            pointX: point.x,
+            pointY: point.y,
+            worldX,
+            worldY,
+            beadX: bead.x,
+            beadY: bead.y,
+            beadWidth: bead.width,
+            beadHeight: bead.height
+          })
+          
+          // Paint the bead
+          const currentToolMode = $toolMode
+          if (currentToolMode === 'paint') {
+            if (bead.isFringe) {
+              // Handle fringe bead painting
+              fringeColors.update((oldFringeColors) => ({...oldFringeColors, [bead.id]: $selectedColorId}))
+            } else {
+              // Handle main canvas bead painting
+              $canvasColors[bead.id] = $selectedColorId
+            }
+          } else if (currentToolMode === 'eraser') {
+            // Eraser mode: remove color from this bead
+            if (bead.isFringe) {
+              fringeColors.update((oldFringeColors) => {
+                const newFringeColors = {...oldFringeColors}
+                delete newFringeColors[bead.id]
+                return newFringeColors
+              })
+            } else {
+              canvasColors.update((oldCanvas) => {
+                const newCanvas = {...oldCanvas}
+                delete newCanvas[bead.id]
+                return newCanvas
+              })
+            }
+          }
+          lastPaintedBead = bead.id
+        }
       }
-      // In paint mode, do nothing - let individual beads handle their own touch events
     } else if (e.touches.length === 2) {
       // Two finger gestures
       e.preventDefault()
@@ -194,7 +369,7 @@
 
   const handleTouchEnd = (e) => {
     if (e.touches.length === 0) {
-      // Only reset if we were actually panning
+      // Reset touch state
       if (panMode) {
         isTouchPanning = false
         isPaintingMode = false
@@ -202,6 +377,8 @@
         touchStartTime = 0
         lastPaintedBead = null
       }
+      // Clear touch active state for continuous painting
+      isTouchActive = false
     } else if (e.touches.length === 1 && panMode) {
       // Reset for single touch only in pan mode
       const touch = e.touches[0]
@@ -307,8 +484,8 @@
     lastPaintedBead = null
   }
 
-  // Expose functions for external use
-  export { resetView, togglePanMode, panMode }
+  // Expose functions and state for external use
+  export { resetView, togglePanMode, panMode, isTouchActive }
 </script>
 
 <svg 
@@ -328,15 +505,15 @@
 >
   <g {transform}>
     {#each beads as bead (bead.id)}
-      <Bead {...bead} {stitchType} />
+      <Bead {...bead} {stitchType} {isTouchActive} />
     {/each}
     <!-- Fringe beads -->
     {#each fringeBeads as fringeBead (fringeBead.id)}
-      <Bead {...fringeBead} {stitchType} />
+      <Bead {...fringeBead} {stitchType} {isTouchActive} />
     {/each}
     <!-- Preview beads for move operation -->
     {#each previewBeads as previewBead (previewBead.id)}
-      <Bead {...previewBead} isPreview={true} {stitchType} />
+      <Bead {...previewBead} isPreview={true} {stitchType} {isTouchActive} />
     {/each}
   </g>
 </svg>
