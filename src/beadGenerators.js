@@ -1,5 +1,7 @@
 // Bead generation functions for different stitch types
 
+import { calculatePeyoteRowNumber } from './peyoteRowUtils.js'
+
 const range = (s) => [...Array(s).keys()]
 
 // Constants for bead dimensions
@@ -52,24 +54,34 @@ export function generateSquareBeads(size, h, w, totalH, totalW, angle) {
 }
 
 // Peyote stitch generator (vertical orientation)
-export function generatePeyoteBeads(size, h, w, totalH, totalW, angle) {
+export function generatePeyoteBeads(size, h, w, totalH, totalW, angle, startingRowNumber = 0) {
   if (angle === 180) {
-    return range(size).flatMap(i => range(size).flatMap(j=> ({
-      id: i*size + j,
-      x: totalW - (w * (i + 1.5)) - 6,
-      y: totalH - (i % 2 ? h * (j + 1) : h * (j + 1.5)) + 1,
-      height: h,
-      width: w,
-    })))
+    return range(size).flatMap(i => range(size).flatMap(j=> {
+      const bead = {
+        id: i*size + j,
+        x: totalW - (w * (i + 1.5)) - 6,
+        y: totalH - (i % 2 ? h * (j + 1) : h * (j + 1.5)) + 1,
+        height: h,
+        width: w,
+      }
+      // Add row number calculation for peyote stitch
+      bead.rowNumber = calculatePeyoteRowNumber(i, j, size, startingRowNumber)
+      return bead
+    }))
   } else {
     // Default 0° rotation
-    return range(size).flatMap(i => range(size).flatMap(j=> ({
-      id: i*size + j,
-      x: w * (i + 1.5) + 2,
-      y: i % 2 ? h * (j + 1) : h * (j + 1.5),
-      height: h,
-      width: w,
-    })))
+    return range(size).flatMap(i => range(size).flatMap(j=> {
+      const bead = {
+        id: i*size + j,
+        x: w * (i + 1.5) + 2,
+        y: i % 2 ? h * (j + 1) : h * (j + 1.5),
+        height: h,
+        width: w,
+      }
+      // Add row number calculation for peyote stitch
+      bead.rowNumber = calculatePeyoteRowNumber(i, j, size, startingRowNumber)
+      return bead
+    }))
   }
 }
 
@@ -178,12 +190,12 @@ export function getBottomRowBeadIds(size) {
 }
 
 // Main bead generator function
-export function makeBeads(size, h, w, totalH, totalW, angle, stitch) {
+export function makeBeads(size, h, w, totalH, totalW, angle, stitch, startingRowNumber = 0) {
   switch(stitch) {
     case 'square':
       return generateSquareBeads(size, h, w, totalH, totalW, angle)
     case 'peyote':
-      return generatePeyoteBeads(size, h, w, totalH, totalW, angle)
+      return generatePeyoteBeads(size, h, w, totalH, totalW, angle, startingRowNumber)
     case 'brick':
       return generateBrickBeads(size, h, w, totalH, totalW, angle)
     default:

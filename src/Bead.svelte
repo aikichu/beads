@@ -9,9 +9,10 @@
   export let stitchType = 'peyote'
   export let isFringe = false
   export let isTouchActive = false
+  export let rowNumber = undefined
 
   // Only import stores that are actually needed
-  import { colorPalette, canvasColors, selectedColorId, history, step, legendVisible, gridVisible, toolMode, selectedBeads, fringeColors, isPanning } from './stores.js'
+  import { colorPalette, canvasColors, selectedColorId, history, step, legendVisible, rowNumbersVisible, gridVisible, toolMode, selectedBeads, fringeColors, isPanning } from './stores.js'
 
   $: originalId = isPreview ? id.replace('preview_', '') : id
   $: beadColorId = isFringe ? $fringeColors[originalId] : $canvasColors[originalId]
@@ -20,6 +21,7 @@
   $: symbol = color.symbol || ''
   $: isSelected = $selectedBeads.has(originalId)
   $: isColored = beadColorId !== undefined
+  
   
   // Calculate symbol color based on bead color brightness
   $: symbolColor = (() => {
@@ -188,6 +190,17 @@
       font-weight="bold"
       pointer-events="none"
     >{symbol}</text>
+  {:else if $rowNumbersVisible && rowNumber !== undefined && stitchType === 'peyote' && !isFringe}
+    <text
+      x={x + width/2}
+      y={y + height/2 + 0.1}
+      text-anchor="middle"
+      dominant-baseline="middle"
+      font-size={Math.min(width, height) * 0.6}
+      fill="black"
+      font-weight="bold"
+      pointer-events="none"
+    >{rowNumber}</text>
   {/if}
 {:else if shape === 'circle'}
   <circle
@@ -217,6 +230,17 @@
       font-weight="bold"
       pointer-events="none"
     >{symbol}</text>
+  {:else if $rowNumbersVisible && rowNumber !== undefined && stitchType === 'peyote' && !isFringe}
+    <text
+      x={x + width/2}
+      y={y + height/2 + 0.1}
+      text-anchor="middle"
+      dominant-baseline="middle"
+      font-size={Math.min(width, height) * 0.6}
+      fill="black"
+      font-weight="bold"
+      pointer-events="none"
+    >{rowNumber}</text>
   {/if}
 {:else}
   <!-- Other stitch types: render as regular rectangles -->
@@ -243,6 +267,17 @@
       font-weight="bold"
       pointer-events="none"
     >{symbol}</text>
+  {:else if $rowNumbersVisible && rowNumber !== undefined && stitchType === 'peyote' && !isFringe}
+    <text
+      x={x + width/2}
+      y={y + height/2 + 0.1}
+      text-anchor="middle"
+      dominant-baseline="middle"
+      font-size={Math.min(width, height) * 0.6}
+      fill="black"
+      font-weight="bold"
+      pointer-events="none"
+    >{rowNumber}</text>
   {/if}
 {/if}
 

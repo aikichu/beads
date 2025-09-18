@@ -26,6 +26,7 @@ const createSelectedColorID = () => createStore(defaultSelectedColorID())
 const createEraserMode = () => createToggleStore(false)
 
 const createLegendVisible = () => createToggleStore(true)
+const createRowNumbersVisible = () => createToggleStore(false)
 
 const createZoomLevel = () => createStore(1, {
   zoomIn: function() { this.update(level => Math.min(level * ZOOM_CONFIG.STEP, ZOOM_CONFIG.MAX)) },
@@ -55,6 +56,9 @@ const createFringeVisible = () => createToggleStore(false)
 const createFringeLength = () => createStore(3) // Global fringe length (1-20)
 const createFringeColors = () => createStore({}) // Individual fringe bead colors {fringeBeadId: colorId}
 
+// Peyote row numbering stores
+const createPeyoteStartingRow = () => createStore(0) // Starting row number for peyote stitch
+
 const createColorPalette = () => createStore(defaultColorPalette())
 
 const createCanvasColors = () => createStore(defaultCanvas())
@@ -65,6 +69,7 @@ const createHistory = () => createDeltaHistory(defaultCanvas())
 export const selectedColorId = createSelectedColorID()
 export const eraserMode = createEraserMode()
 export const legendVisible = createLegendVisible()
+export const rowNumbersVisible = createRowNumbersVisible()
 export const zoomLevel = createZoomLevel()
 export const panOffset = createPanOffset()
 export const isPanning = createIsPanning()
@@ -75,6 +80,7 @@ export const moveOffset = createMoveOffset()
 export const fringeVisible = createFringeVisible()
 export const fringeLength = createFringeLength()
 export const fringeColors = createFringeColors()
+export const peyoteStartingRow = createPeyoteStartingRow()
 export const canvasColors = createCanvasColors()
 export const colorPalette = createColorPalette()
 export const step = createStep()

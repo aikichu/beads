@@ -1,7 +1,7 @@
 <script>
   import ConfigPanelGrid from './ConfigPanelGrid.svelte'
 
-  import { step } from './stores.js'
+  import { step, peyoteStartingRow } from './stores.js'
 
   export let gridSize
   export let layoutRotation
@@ -13,6 +13,7 @@
   $: painting = $step == 'painting'
 	$: configuring = $step == 'configuring'
 	$: showRotation = stitchType === 'square'
+	$: showPeyoteControls = stitchType === 'peyote'
 </script>
 
 <div class="cell">
@@ -24,6 +25,20 @@
         <option value="brick">Brick Stitch (Horizontal)</option>
         <option value="square">Square Stitch</option>
       </select>
+      {#if showPeyoteControls && configuring}
+        <div class="peyote-controls">
+          <label for="starting-row">Start numbering from row:</label>
+          <input 
+            id="starting-row" 
+            type="number" 
+            bind:value={$peyoteStartingRow} 
+            min="-100" 
+            max="100" 
+            step="1"
+            class="starting-row-input"
+          />
+        </div>
+      {/if}
     </div>
     <div slot='rotate-buttons'>
       <button on:click={rotateRight} class='secondary-button' aria-label='rotate'>
@@ -104,6 +119,7 @@
 
   input {
     -webkit-appearance: none;
+    appearance: none;
     height: 1em;
     width: 80%;
     border-radius: 0.4em;
@@ -131,5 +147,34 @@
     border-radius: 50%;
     background: #4CAF50;
     cursor: pointer;
+  }
+
+  .peyote-controls {
+    margin-top: 0.5em;
+    padding-top: 0.5em;
+    border-top: 1px solid #eee;
+  }
+
+  .peyote-controls label {
+    display: block;
+    margin-bottom: 0.3em;
+    font-weight: bold;
+    font-size: 0.8em;
+    color: #666;
+  }
+
+  .starting-row-input {
+    width: 100%;
+    padding: 0.3em;
+    border: 1px solid #ccc;
+    border-radius: 0.3em;
+    background: white;
+    font-size: 0.9em;
+    text-align: center;
+  }
+
+  .starting-row-input:focus {
+    outline: none;
+    border-color: #4CAF50;
   }
 </style>

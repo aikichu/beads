@@ -1,6 +1,6 @@
 <script>
   import Bead from './Bead.svelte'
-  import { canvasColors, selectedColorId, history, step, zoomLevel, panOffset, isPanning, selectedBeads, moveOffset, fringeVisible, fringeLength, fringeColors, toolMode } from './stores.js'
+  import { canvasColors, selectedColorId, history, step, zoomLevel, panOffset, isPanning, selectedBeads, moveOffset, fringeVisible, fringeLength, fringeColors, toolMode, peyoteStartingRow } from './stores.js'
   import { makeBeads, BEAD_WIDTH, BEAD_HEIGHT, generateFringeBeads } from './beadGenerators.js'
   import { calculatePreviewBeads } from './beadPositionUtils.js'
 
@@ -37,7 +37,7 @@
   // Use consistent viewBox that doesn't change based on fringe visibility
   $: viewBox = `0 0 ${maxCanvasWidth} ${maxCanvasHeight}`
 
-  $: beads = makeBeads(gridSize, BEAD_HEIGHT, BEAD_WIDTH, totalSideWidth, totalSideHeight, layoutRotation, stitchType)
+  $: beads = makeBeads(gridSize, BEAD_HEIGHT, BEAD_WIDTH, totalSideWidth, totalSideHeight, layoutRotation, stitchType, $peyoteStartingRow)
 
   // Generate fringe beads when fringe is visible and stitch type is brick
   $: fringeBeads = ($fringeVisible && stitchType === 'brick') 

@@ -1,8 +1,15 @@
 <script>
-  import { colorLegend, legendVisible } from './stores.js'
+  import { colorLegend, legendVisible, rowNumbersVisible } from './stores.js'
   
   const toggleLegend = () => {
-    legendVisible.toggle()
+    if ($legendVisible) {
+      // Turning off legend
+      legendVisible.set(false)
+    } else {
+      // Turning on legend - first turn off row numbers
+      rowNumbersVisible.set(false)
+      legendVisible.set(true)
+    }
   }
 </script>
 

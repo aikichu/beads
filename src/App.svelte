@@ -4,6 +4,7 @@
 	import Workspace from './Workspace.svelte'
 	import Canvas from './Canvas.svelte'
 	import ColorLegend from './ColorLegend.svelte'
+	import RowNumbers from './RowNumbers.svelte'
 
 	import { step } from './stores.js'
 
@@ -34,8 +35,9 @@
 			{/if}
 		</div>
 		{#if painting}
-			<div class="color-legend-area">
+			<div class="legend-area">
 				<ColorLegend />
+				<RowNumbers />
 			</div>
 		{/if}
 	</Workspace>
@@ -149,11 +151,12 @@
 		gap: 1rem;
 	}
 
-	.color-legend-area {
+	.legend-area {
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
 		margin-top: 1rem;
+		gap: 1rem;
 	}
 
 	/* Responsive design for narrow screens */
@@ -194,7 +197,7 @@
 			gap: 0.5rem;
 		}
 
-		.color-legend-area {
+		.legend-area {
 			margin-top: 0.5rem;
 			align-self: stretch;
 		}
