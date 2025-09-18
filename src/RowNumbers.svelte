@@ -20,12 +20,6 @@
       {$rowNumbersVisible ? '−' : '+'}
     </button>
   </div>
-  {#if $rowNumbersVisible}
-    <div class="row-numbers-info">
-      <p>Peyote stitch row numbers are displayed on each bead.</p>
-      <p>Row 0 is at the center, numbers cycle 0-9.</p>
-    </div>
-  {/if}
 </div>
 
 <style>
@@ -96,25 +90,4 @@
     background: #888;
   }
 
-  .row-numbers-info {
-    padding: 0.5em;
-    background: white;
-    border-radius: 0.3em;
-    border: 1px solid #eee;
-  }
-
-  .row-numbers-info p {
-    margin: 0.3em 0;
-    font-size: 0.9em;
-    color: #666;
-    line-height: 1.4;
-  }
-
-  .row-numbers-info p:first-child {
-    margin-top: 0;
-  }
-
-  .row-numbers-info p:last-child {
-    margin-bottom: 0;
-  }
 </style>

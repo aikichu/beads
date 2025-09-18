@@ -94,43 +94,43 @@
   }
 
   .colors-grid{
-    display: grid;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    grid-template-columns: 2em 2em 2em 2em 2em 2em;
-    grid-template-rows: 2em 2em;
-    gap: 0.2em;
+    gap: 0.4em;
+    position: relative;
+    width: 13.6em; /* 6 * 2em + 5 * 0.4em */
   }
 
   /* Responsive design for narrow screens */
   @media (max-width: 1024px) {
     .colors-grid {
-      grid-template-columns: 1.8em 1.8em 1.8em 1.8em 1.8em 1.8em;
-      grid-template-rows: 1.8em 1.8em;
-      gap: 0.15em;
+      width: 12.2em; /* 6 * 1.8em + 5 * 0.3em */
+      gap: 0.3em;
     }
   }
 
   @media (max-width: 768px) {
     .colors-grid {
-      grid-template-columns: 1.5em 1.5em 1.5em 1.5em 1.5em 1.5em;
-      grid-template-rows: 1.5em 1.5em;
-      gap: 0.1em;
+      width: 10.5em; /* 6 * 1.5em + 5 * 0.25em */
+      gap: 0.25em;
     }
   }
 
   @media (max-width: 480px) {
     .colors-grid {
-      grid-template-columns: 1.2em 1.2em 1.2em 1.2em 1.2em 1.2em;
-      grid-template-rows: 1.2em 1.2em;
-      gap: 0.05em;
+      width: 8.5em; /* 6 * 1.2em + 5 * 0.2em */
+      gap: 0.2em;
     }
   }
 
   .selected{
-    transform: scale(1.5);
+    transform: scale(1.2);
     filter: drop-shadow(0 0 0.2em rgba(0,0,0,0.2));
     border-radius: 0.4em;
+    z-index: 10;
+    position: relative;
   }
 
   .color{
@@ -139,6 +139,8 @@
     transition: all 0.3s ease;
     background-color: hsl(var(--h), var(--s), var(--l));
     box-sizing: border-box;
+    position: relative;
+    z-index: 1;
   }
 
   .color:not(.selected){
@@ -146,7 +148,7 @@
   }
 
   .color:not(.selected):hover{
-    transform: scale(1.2);
+    transform: scale(1.1);
     cursor: pointer;
   }
 

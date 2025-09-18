@@ -153,7 +153,7 @@
 
 	.legend-area {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		align-items: flex-start;
 		margin-top: 1rem;
 		gap: 1rem;
@@ -164,6 +164,12 @@
 		main {
 			grid-template-columns: 12rem 1fr 10rem;
 			gap: 0.3em 0.3em;
+		}
+	}
+
+	@media (max-width: 1200px) {
+		.legend-area {
+			flex-direction: column;
 		}
 	}
 
@@ -200,6 +206,7 @@
 		.legend-area {
 			margin-top: 0.5rem;
 			align-self: stretch;
+			flex-direction: column;
 		}
 	}
 
