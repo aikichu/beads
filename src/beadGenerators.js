@@ -7,45 +7,6 @@ export const BEAD_SIZE_RATIO = 0.82
 export const BEAD_WIDTH = 2 * BEAD_SIZE_RATIO
 export const BEAD_HEIGHT = 2
 
-// RAW stitch generator
-export function generateRawBeads(size, h, w) {
-  const beads = []
-  const unitSpacing = w * 0.8 // Closer spacing so units overlap
-  const beadMap = new Map() // Track bead positions to avoid duplicates
-
-  for (let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-      const centerX = j * unitSpacing + w
-      const centerY = i * unitSpacing + h
-
-      // Define 4 bead positions for this unit
-      const positions = [
-        { x: centerX, y: centerY - unitSpacing/2, key: `${j}_${i-0.5}` },     // top (shared with unit above)
-        { x: centerX + unitSpacing/2, y: centerY, key: `${j+0.5}_${i}` },     // right (shared with unit right)
-        { x: centerX, y: centerY + unitSpacing/2, key: `${j}_${i+0.5}` },     // bottom (shared with unit below)
-        { x: centerX - unitSpacing/2, y: centerY, key: `${j-0.5}_${i}` }      // left (shared with unit left)
-      ]
-
-      positions.forEach((pos) => {
-        // Only create a bead if this position doesn't already exist (avoid duplicates from sharing)
-        if (!beadMap.has(pos.key)) {
-          const beadId = beadMap.size // Sequential ID
-          beadMap.set(pos.key, beadId)
-
-          beads.push({
-            id: beadId,
-            x: pos.x,
-            y: pos.y,
-            width: w * 0.4,
-            height: h * 0.4,
-            shape: 'circle'
-          })
-        }
-      })
-    }
-  }
-  return beads
-}
 
 // Square stitch generator
 export function generateSquareBeads(size, h, w, totalH, totalW, angle) {
@@ -219,8 +180,6 @@ export function getBottomRowBeadIds(size) {
 // Main bead generator function
 export function makeBeads(size, h, w, totalH, totalW, angle, stitch) {
   switch(stitch) {
-    case 'raw':
-      return generateRawBeads(size, h, w)
     case 'square':
       return generateSquareBeads(size, h, w, totalH, totalW, angle)
     case 'peyote':

@@ -23,7 +23,6 @@
         <option value="peyote">Peyote Stitch (Vertical)</option>
         <option value="brick">Brick Stitch (Horizontal)</option>
         <option value="square">Square Stitch</option>
-        <option value="raw">RAW Stitch</option>
       </select>
     </div>
     <div slot='rotate-buttons'>

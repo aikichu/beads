@@ -22,23 +22,26 @@
   .reset-control {
     display: flex;
     justify-content: center;
-    padding: 0.5rem;
+    padding: 0.75rem;
   }
 
   .reset-button {
     width: 2.5rem;
     height: 2.5rem;
-    background-color: #dc3545;
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
     color: white;
     border: none;
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     font-size: 1.2rem;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .reset-button:hover {
-    background-color: #c82333;
+    background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   }
 
   /* Responsive design for narrow screens */

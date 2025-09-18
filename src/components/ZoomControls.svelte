@@ -26,7 +26,7 @@
 </script>
 
 <div class="zoom-controls">
-  <h4>Zoom & Pan</h4>
+  <h4>Zoom</h4>
   <div class="zoom-info">
     <span class="zoom-level">{Math.round($zoomLevel * 100)}%</span>
   </div>
@@ -59,11 +59,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    background-color: #e8f4fd;
-    border-radius: 0.5rem;
-    border: 1px solid #b3d9ff;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 0.75rem;
+    border: 1px solid #90caf9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   /* Responsive design for narrow screens */

@@ -47,11 +47,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    background-color: #fff3cd;
-    border-radius: 0.5rem;
-    border: 1px solid #ffeaa7;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border-radius: 0.75rem;
+    border: 1px solid #fdcb6e;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   /* Responsive design for narrow screens */

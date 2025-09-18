@@ -34,11 +34,12 @@
 
 <style>
   .fringe-controls {
-    background-color: #f8f9fa;
-    border: 2px solid #e9ecef;
-    border-radius: 0.5rem;
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 2px solid #fdcb6e;
+    border-radius: 0.75rem;
     padding: 1rem;
     margin-top: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   /* Responsive design for narrow screens */

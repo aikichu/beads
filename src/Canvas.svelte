@@ -6,7 +6,7 @@
 
   export let gridSize
   export let layoutRotation
-  export let stitchType = 'offset' // 'offset' for current layout, 'square' for square stitch
+  export let stitchType = 'peyote' // 'peyote' for vertical, 'brick' for horizontal, 'square' for grid
 
   let svgElement
   let lastPanPoint = { x: 0, y: 0 }
@@ -16,7 +16,8 @@
   let touchStartTime = 0
   let touchStartPosition = { x: 0, y: 0 }
   let isPaintingMode = false
-  let panMode = false // Toggle for pan mode
+  // Pan mode is now controlled by toolMode store
+  $: panMode = $toolMode === 'pan'
   let lastPaintedBead = null // Track last painted bead to avoid repainting
   let isTouchActive = false // Track if a touch is currently active for continuous painting
 
@@ -25,18 +26,13 @@
   // Calculate extra height needed for fringe beads
   $: fringeHeight = $fringeLength * BEAD_WIDTH
 
-  // Calculate the maximum possible canvas size to maintain consistent sizing
-  $: maxCanvasWidth = stitchType === 'square'
-    ? Math.max(totalSideWidth, gridSize * BEAD_WIDTH + 2)
-    : stitchType === 'raw'
-    ? gridSize * BEAD_WIDTH * 0.8 + BEAD_WIDTH * 2
-    : totalSideWidth
-
-  $: maxCanvasHeight = stitchType === 'square'
-    ? Math.max(totalSideHeight, gridSize * BEAD_HEIGHT + 2)
-    : stitchType === 'raw'
-    ? gridSize * BEAD_HEIGHT * 0.8 + BEAD_HEIGHT * 2
-    : totalSideHeight + fringeHeight // Always include fringe space for consistent sizing
+  // Calculate unified canvas size for consistent appearance across all stitch types
+  // Use consistent sizing that accommodates all stitch types without being too large
+  $: unifiedCanvasWidth = gridSize * BEAD_WIDTH + 6  // Consistent width with padding
+  $: unifiedCanvasHeight = gridSize * BEAD_HEIGHT + 6  // Consistent height with padding
+  
+  $: maxCanvasWidth = Math.max(unifiedCanvasWidth, totalSideWidth)
+  $: maxCanvasHeight = Math.max(unifiedCanvasHeight, totalSideHeight)
 
   // Use consistent viewBox that doesn't change based on fringe visibility
   $: viewBox = `0 0 ${maxCanvasWidth} ${maxCanvasHeight}`
@@ -395,16 +391,8 @@
     panOffset.set({ x: 0, y: 0 })
   }
 
-  const togglePanMode = () => {
-    panMode = !panMode
-    // Reset touch states when switching modes
-    isTouchPanning = false
-    isPaintingMode = false
-    lastPaintedBead = null
-  }
-
   // Expose functions and state for external use
-  export { resetView, togglePanMode, panMode, isTouchActive }
+  export { resetView, isTouchActive }
 </script>
 
 <svg 
@@ -439,7 +427,6 @@
 
 <style>
   svg{
-    /* border: red 2px solid; */
     touch-action: none;
     /* Responsive sizing that maintains aspect ratio */
     width: 100%;
@@ -456,6 +443,11 @@
     -webkit-touch-callout: none;
     /* Ensure consistent sizing */
     min-height: 400px;
+    /* Canvas border styling to match toolbox */
+    border: 1px solid #dee2e6;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    background: white;
   }
 
   /* Allow touch events for individual elements when not in pan mode */

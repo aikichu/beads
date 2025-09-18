@@ -6,7 +6,7 @@
   export let height
   export let shape = 'rectangle'
   export let isPreview = false
-  export let stitchType = 'offset'
+  export let stitchType = 'peyote'
   export let isFringe = false
   export let isTouchActive = false
 
@@ -96,10 +96,6 @@
     const currentToolMode = $toolMode
 
     if(currentToolMode === 'selection') {
-      // Disable selection for raw stitch
-      if(stitchType === 'raw') {
-        return
-      }
       // Selection mode: only select colored beads
       if(isColored) {
         if(isSelected) {
@@ -121,10 +117,6 @@
     const currentToolMode = $toolMode
 
     if(currentToolMode === 'selection') {
-      // Disable selection for raw stitch
-      if(stitchType === 'raw') {
-        return
-      }
       // Selection mode: only select colored beads on drag
       if(e.buttons === 1 && isColored) {
         if(!isSelected) {
@@ -168,7 +160,6 @@
 </script>
 
 {#if shape === 'oval-ring'}
-  <!-- RAW stitch: render as hollow oval rings -->
   <ellipse
     {id}
     cx={x + width/2}
@@ -199,7 +190,6 @@
     >{symbol}</text>
   {/if}
 {:else if shape === 'circle'}
-  <!-- RAW stitch: render as individual circular beads -->
   <circle
     {id}
     cx={x + width/2}
