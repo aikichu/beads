@@ -132,6 +132,31 @@
 </script>
 
 <div class="toolbox">
+  <!-- Canvas Configuration Section -->
+  <section class="tool-section canvas-config">
+    <h3 class="section-title">Canvas Size</h3>
+    <div class="canvas-controls">
+      <div class="size-display">
+        <span class="size-label">{gridSize} × {gridSize}</span>
+      </div>
+      <div class="size-slider">
+        <input
+          type="range"
+          bind:value={gridSize}
+          min="5"
+          max="50"
+          step="1"
+          class="canvas-size-slider"
+          aria-label="Canvas size"
+        />
+        <div class="size-labels">
+          <span class="min-size">5×5</span>
+          <span class="max-size">50×50</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Stitch Configuration Section -->
   <section class="tool-section stitch-config">
     <h3 class="section-title">Stitch Type</h3>
@@ -472,6 +497,80 @@
   .reset-view-button:hover {
     background-color: #138496;
     transform: translateY(-1px);
+  }
+
+  .canvas-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .size-display {
+    text-align: center;
+  }
+
+  .size-label {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #495057;
+    background: #f8f9fa;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 2px solid #e9ecef;
+    display: inline-block;
+    min-width: 80px;
+  }
+
+  .size-slider {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    align-items: center;
+  }
+
+  .canvas-size-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 0.8rem;
+    border-radius: 0.4rem;
+    background: #d3d3d3;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .canvas-size-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .canvas-size-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .size-labels {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: 500;
   }
 
   .stitch-controls {

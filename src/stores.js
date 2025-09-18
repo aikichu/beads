@@ -16,7 +16,7 @@ const defaultColorPalette = () => (
 const defaultCanvas = () => ({})
 const defaultHistory = () => ({cursor: 0, versions:[defaultCanvas()]})
 
-const createStep = () => createStore(APP_STEPS.CONFIGURING, {
+const createStep = () => createStore(APP_STEPS.PAINTING, {
   setPainting: function() { this.set(APP_STEPS.PAINTING) },
   setConfiguring: function() { this.set(APP_STEPS.CONFIGURING) }
 })
