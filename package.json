@@ -5,7 +5,9 @@
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "start": "sirv public --host",
-    "deploy": "npm run build && gh-pages -d public"
+    "deploy": "npm run build && gh-pages -d public",
+    "build:wordpress": "rollup -c rollup.config.wordpress.js",
+    "dev:wordpress": "rollup -c rollup.config.wordpress.js -w"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^16.0.0",
