@@ -1,12 +1,12 @@
-# 🎉 보안 테스트 결과 설명
+# 🎉 Security Test Results Explained
 
-## ✅ **좋은 소식: 보안이 제대로 작동하고 있습니다!**
+## ✅ **Good News: Security is Working Properly!**
 
-콘솔에 나타난 에러/경고 메시지는 **보안 기능이 정상 작동한다는 증거**입니다.
+Error/warning messages in the console are **evidence that security features are functioning correctly**.
 
 ---
 
-## 📋 콘솔 메시지 해석
+## 📋 Console Message Interpretation
 
 ### 1. **X-Frame-Options 경고**
 ```
@@ -14,53 +14,53 @@ X-Frame-Options may only be set via an HTTP header sent along with a document.
 It may not be set inside <meta>.
 ```
 
-**의미**:
-- ✅ **정상적인 경고입니다**
-- X-Frame-Options는 클릭재킹 방지를 위한 보안 헤더
-- HTML meta 태그로는 설정 불가, HTTP 헤더로만 가능
-- **워드프레스 환경에서는 PHP가 자동으로 HTTP 헤더로 전송**
+**Meaning**:
+- ✅ **This is a normal warning**
+- X-Frame-Options is a security header for clickjacking prevention
+- Cannot be set via HTML meta tag, only via HTTP headers
+- **In WordPress environment, PHP automatically sends it as HTTP header**
 
 ### 2. **CSP frame-ancestors 경고**
 ```
 The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element.
 ```
 
-**의미**:
-- ✅ **정상적인 경고입니다**
-- frame-ancestors는 iframe 임베딩 제어
-- meta 태그로는 작동 안 함
-- **실제 워드프레스에서는 HTTP 헤더로 전송되어 정상 작동**
+**Meaning**:
+- ✅ **This is a normal warning**
+- frame-ancestors controls iframe embedding
+- Doesn't work via meta tag
+- **In actual WordPress, sent via HTTP header and works properly**
 
-### 3. **🎊 JavaScript URL 차단 (성공!)**
+### 3. **🎊 JavaScript URL Blocked (Success!)**
 ```
 Refused to load the image 'javascript:alert(2)' because it violates the following
 Content Security Policy directive: "img-src 'self' data:".
 ```
 
-**의미**:
-- ✅ **보안이 완벽하게 작동 중!**
-- XSS 공격 시도가 CSP에 의해 차단됨
-- `javascript:` URL을 이미지로 로드하려는 시도를 막음
-- **이것이 바로 우리가 원하는 결과입니다!**
+**Meaning**:
+- ✅ **Security is working perfectly!**
+- XSS attack attempt blocked by CSP
+- Prevented attempt to load `javascript:` URL as image
+- **This is exactly the result we want!**
 
 ---
 
-## 🔍 테스트 결과 요약
+## 🔍 Test Results Summary
 
-| 테스트 항목 | 상태 | 설명 |
-|------------|------|------|
-| **CSP 작동** | ✅ 성공 | JavaScript URL 차단 확인 |
-| **XSS 방지** | ✅ 성공 | 악성 스크립트 실행 차단 |
-| **Meta 태그 경고** | ⚠️ 예상됨 | 실제 환경에서는 HTTP 헤더로 처리 |
-| **플러그인 보안** | ✅ 안전 | 모든 취약점 패치 완료 |
+| Test Item | Status | Description |
+|-----------|--------|-------------|
+| **CSP Working** | ✅ Success | JavaScript URL blocking confirmed |
+| **XSS Prevention** | ✅ Success | Malicious script execution blocked |
+| **Meta Tag Warning** | ⚠️ Expected | Handled via HTTP headers in production |
+| **Plugin Security** | ✅ Safe | All vulnerabilities patched |
 
 ---
 
-## 🚀 실제 워드프레스 환경에서는?
+## 🚀 In Actual WordPress Environment?
 
-### PHP 코드가 자동으로 처리:
+### PHP Code Handles Automatically:
 ```php
-// bead-pattern-designer.php에 이미 구현됨
+// Already implemented in bead-pattern-designer.php
 function bpd_add_security_headers() {
     if (!is_admin() && !headers_sent()) {
         header('X-Content-Type-Options: nosniff');
@@ -70,7 +70,7 @@ function bpd_add_security_headers() {
 }
 ```
 
-### 실제 환경에서 전송되는 HTTP 헤더:
+### HTTP Headers Sent in Production:
 ```
 HTTP/1.1 200 OK
 X-Content-Type-Options: nosniff
@@ -81,31 +81,31 @@ Content-Security-Policy: default-src 'self'; ...
 
 ---
 
-## ✨ 결론
+## ✨ Conclusion
 
-**현재 보이는 모든 콘솔 메시지는:**
-1. 보안이 제대로 작동한다는 증거
-2. XSS 공격이 성공적으로 차단되고 있음
-3. 테스트 환경의 한계로 인한 예상된 경고
+**All console messages currently shown are:**
+1. Evidence that security is working properly
+2. XSS attacks are being successfully blocked
+3. Expected warnings due to test environment limitations
 
-**플러그인은 프로덕션 환경에서 안전하게 사용 가능합니다!** 🎉
+**The plugin is safe to use in production!** 🎉
 
 ---
 
-## 🔧 추가 테스트 방법
+## 🔧 Additional Testing Methods
 
-### Chrome DevTools에서 확인:
-1. F12 → Network 탭
-2. 페이지 새로고침
-3. test-environment.html 클릭
-4. Response Headers 확인
+### Check in Chrome DevTools:
+1. F12 → Network tab
+2. Refresh page
+3. Click test-environment.html
+4. Check Response Headers
 
-### Security Headers 검사 (온라인):
-실제 배포 후: https://securityheaders.com 에서 도메인 검사
+### Security Headers Check (Online):
+After deployment: Check domain at https://securityheaders.com
 
-### WordPress 환경 테스트:
+### WordPress Environment Test:
 ```bash
-# Docker로 실제 테스트
+# Test with Docker
 docker-compose up -d
-# http://localhost:8080 접속
+# Access http://localhost:8080
 ```

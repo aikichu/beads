@@ -1,151 +1,151 @@
-# 🧪 Bead Pattern Designer 로컬 테스트 가이드
+# 🧪 Bead Pattern Designer Local Testing Guide
 
-## 방법 1: 간단한 HTML 테스트 (권장)
+## Method 1: Simple HTML Test (Recommended)
 
-### 실행 방법
+### How to Run
 ```bash
-# 1. 테스트 디렉토리로 이동
+# 1. Navigate to test directory
 cd wordpress-plugin
 
-# 2. 간단한 HTTP 서버 실행 (Python 3)
+# 2. Start simple HTTP server (Python 3)
 python3 -m http.server 8000
 
-# 또는 Node.js 사용
+# Or use Node.js
 npx serve .
 
-# 또는 PHP 사용
+# Or use PHP
 php -S localhost:8000
 ```
 
-### 브라우저에서 접속
+### Access in Browser
 ```
 http://localhost:8000/test-environment.html
 ```
 
-### 테스트 항목
-- ✅ XSS 공격 차단 테스트
-- ✅ CSP 헤더 검증
-- ✅ Rate Limiting 시뮬레이션
-- ✅ Nonce 토큰 검증
-- ✅ JavaScript 난독화 확인
-- ✅ CSS 인젝션 방지 테스트
+### Test Items
+- ✅ XSS attack blocking test
+- ✅ CSP header validation
+- ✅ Rate limiting simulation
+- ✅ Nonce token verification
+- ✅ JavaScript obfuscation check
+- ✅ CSS injection prevention test
 
 ---
 
-## 방법 2: Docker로 실제 워드프레스 환경 테스트
+## Method 2: Docker WordPress Environment Test
 
-### 1. Docker 설치 확인
+### 1. Check Docker Installation
 ```bash
 docker --version
 docker-compose --version
 ```
 
-### 2. 워드프레스 컨테이너 시작
+### 2. Start WordPress Container
 ```bash
 cd wordpress-plugin
 docker-compose up -d
 ```
 
-### 3. 워드프레스 접속
+### 3. Access WordPress
 - WordPress: http://localhost:8080
 - phpMyAdmin: http://localhost:8081
 
-### 4. 초기 설정
-1. http://localhost:8080 접속
-2. 워드프레스 설치 마법사 진행
-3. 관리자 계정 생성
+### 4. Initial Setup
+1. Access http://localhost:8080
+2. Complete WordPress installation wizard
+3. Create admin account
 
-### 5. 플러그인 활성화
-1. 워드프레스 관리자 로그인
-2. 플러그인 → 설치된 플러그인
-3. "Bead Pattern Designer" 활성화
+### 5. Activate Plugin
+1. Login to WordPress admin
+2. Plugins → Installed Plugins
+3. Activate "Bead Pattern Designer"
 
-### 6. 테스트
-1. 페이지 → 새로 추가
-2. 본문에 `[bead-pattern]` 입력
-3. 게시 후 확인
+### 6. Test
+1. Pages → Add New
+2. Add `[bead-pattern]` to content
+3. Publish and verify
 
-### 7. 종료
+### 7. Shutdown
 ```bash
 docker-compose down
 ```
 
-### 8. 데이터 완전 삭제 (선택사항)
+### 8. Complete Data Removal (Optional)
 ```bash
 docker-compose down -v
 ```
 
 ---
 
-## 방법 3: 기존 워드프레스에 설치
+## Method 3: Install to Existing WordPress
 
-### 1. 플러그인 압축
+### 1. Compress Plugin
 ```bash
 tar -czf bead-pattern-designer.tar.gz bead-pattern-designer/
 ```
 
-### 2. 워드프레스 관리자
-1. 플러그인 → 새로 추가 → 플러그인 업로드
-2. tar.gz 파일 선택 (또는 압축 해제 후 ZIP으로 재압축)
-3. 설치 및 활성화
+### 2. WordPress Admin
+1. Plugins → Add New → Upload Plugin
+2. Select tar.gz file (or extract and recompress as ZIP)
+3. Install and activate
 
 ---
 
-## 보안 테스트 체크리스트
+## Security Test Checklist
 
-### JavaScript 콘솔에서 테스트
+### JavaScript Console Tests
 ```javascript
-// 1. XSS 테스트
+// 1. XSS Test
 document.querySelector('#bpd-test1').innerHTML = '<img src=x onerror="alert(1)">';
-// → alert가 실행되지 않아야 함
+// → Alert should NOT execute
 
-// 2. Nonce 확인
+// 2. Nonce Verification
 console.log(window.bpdNonce);
-// → 고유한 토큰이 출력되어야 함
+// → Should output unique token
 
-// 3. 난독화 확인
+// 3. Obfuscation Check
 console.log(BeadApp);
-// → 난독화된 객체가 보여야 함
+// → Should show obfuscated object
 
-// 4. CSP 테스트
+// 4. CSP Test
 eval('alert("CSP Test")');
-// → CSP가 엄격하면 차단됨
+// → Should be blocked if CSP is strict
 ```
 
-### 개발자 도구 네트워크 탭
-1. bundle.js 파일 크기 확인 (~56KB)
-2. bundle.css 파일 크기 확인 (~24KB)
-3. 소스맵 없음 확인
+### Developer Tools Network Tab
+1. Check bundle.js file size (~56KB)
+2. Check bundle.css file size (~24KB)
+3. Confirm no source maps
 
-### 보안 헤더 확인 (개발자 도구)
-1. Network 탭 → test-environment.html 선택
-2. Response Headers 확인
-3. 보안 관련 헤더 존재 확인
+### Security Headers Check (Developer Tools)
+1. Network tab → Select test-environment.html
+2. Check Response Headers
+3. Verify security-related headers exist
 
 ---
 
-## 문제 해결
+## Troubleshooting
 
-### Docker 실행 오류
+### Docker Execution Errors
 ```bash
-# 권한 문제
+# Permission issues
 sudo docker-compose up -d
 
-# 포트 충돌
-# docker-compose.yml에서 포트 변경
-# 8080 → 8082, 8081 → 8083 등
+# Port conflicts
+# Change ports in docker-compose.yml
+# 8080 → 8082, 8081 → 8083, etc.
 ```
 
-### 플러그인이 보이지 않을 때
-1. 파일 권한 확인
+### Plugin Not Visible
+1. Check file permissions
 ```bash
 chmod -R 755 bead-pattern-designer/
 ```
 
-2. 플러그인 폴더 구조 확인
+2. Verify plugin folder structure
 ```
 bead-pattern-designer/
-├── bead-pattern-designer.php  # 필수!
+├── bead-pattern-designer.php  # Required!
 ├── assets/
 │   ├── bundle.js
 │   └── bundle.css
@@ -153,22 +153,22 @@ bead-pattern-designer/
     └── security.php
 ```
 
-### JavaScript 오류
-1. 브라우저 콘솔 확인
-2. bundle.js 파일 로드 확인
-3. Svelte 앱 초기화 확인
+### JavaScript Errors
+1. Check browser console
+2. Verify bundle.js file loading
+3. Check Svelte app initialization
 
 ---
 
-## 성능 벤치마크
+## Performance Benchmarks
 
-### 측정 항목
-- 초기 로드 시간: < 500ms
-- 인터랙티브 시간: < 1s
-- 메모리 사용량: < 50MB
-- CPU 사용률: < 10%
+### Metrics
+- Initial load time: < 500ms
+- Time to interactive: < 1s
+- Memory usage: < 50MB
+- CPU usage: < 10%
 
-### 측정 도구
+### Measurement Tools
 - Chrome DevTools → Performance
-- Lighthouse (Chrome 확장)
-- GTmetrix (온라인)
+- Lighthouse (Chrome extension)
+- GTmetrix (online)

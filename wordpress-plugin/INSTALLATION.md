@@ -1,92 +1,92 @@
-# Bead Pattern Designer 워드프레스 플러그인 설치 가이드
+# Bead Pattern Designer WordPress Plugin Installation Guide
 
-## 설치 방법
+## Installation Methods
 
-### 1. 플러그인 파일 준비
+### 1. Plugin File Structure
 ```bash
-# 이미 완료된 상태입니다
+# Already prepared
 wordpress-plugin/bead-pattern-designer/
-├── bead-pattern-designer.php  # 메인 플러그인 파일
-├── readme.txt                  # 워드프레스 플러그인 정보
-├── index.php                   # 보안 파일
+├── bead-pattern-designer.php  # Main plugin file
+├── readme.txt                  # WordPress plugin info
+├── index.php                   # Security file
 └── assets/
-    ├── bundle.js               # 난독화된 JavaScript
-    ├── bundle.css              # 스타일시트
-    └── index.php               # 보안 파일
+    ├── bundle.js               # Obfuscated JavaScript
+    ├── bundle.css              # Stylesheet
+    └── index.php               # Security file
 ```
 
-### 2. 워드프레스에 업로드
+### 2. Upload to WordPress
 
-#### 방법 A: FTP 사용
-1. FTP로 워드프레스 서버 접속
-2. `/wp-content/plugins/` 디렉토리로 이동
-3. `bead-pattern-designer` 폴더 전체를 업로드
+#### Method A: Using FTP
+1. Connect to WordPress server via FTP
+2. Navigate to `/wp-content/plugins/` directory
+3. Upload entire `bead-pattern-designer` folder
 
-#### 방법 B: ZIP 파일로 설치
-1. `bead-pattern-designer` 폴더를 ZIP으로 압축
-2. 워드프레스 관리자 > 플러그인 > 새로 추가
-3. "플러그인 업로드" 클릭
-4. ZIP 파일 선택 후 설치
+#### Method B: ZIP Installation
+1. Compress `bead-pattern-designer` folder to ZIP
+2. WordPress Admin > Plugins > Add New
+3. Click "Upload Plugin"
+4. Select ZIP file and install
 
-### 3. 플러그인 활성화
-1. 워드프레스 관리자 > 플러그인
-2. "Bead Pattern Designer" 찾기
-3. "활성화" 클릭
+### 3. Activate Plugin
+1. WordPress Admin > Plugins
+2. Find "Bead Pattern Designer"
+3. Click "Activate"
 
-## 사용 방법
+## Usage
 
-### 페이지/포스트에 추가
+### Add to Page/Post
 ```
 [bead-pattern]
 ```
 
-### 옵션 사용
+### Options
 ```
 [bead-pattern width="100%" height="600px"]
 [bead-pattern class="my-custom-style"]
 ```
 
-### 관리자 메뉴
-- 워드프레스 관리자 > Bead Pattern 메뉴에서 테스트 가능
+### Admin Menu
+- Test available at WordPress Admin > Bead Pattern menu
 
-## 보안 강화 완료 사항
+## Security Enhancements
 
-✅ **코드 난독화**
-- Terser로 JavaScript 최소화
-- console.log 제거
-- 프로퍼티 난독화
-- 주석 제거
-- 소스맵 제거 (프로덕션)
+✅ **Code Obfuscation**
+- JavaScript minification with Terser
+- Console.log removal
+- Property obfuscation
+- Comment removal
+- Source map removal (production)
 
-✅ **디렉토리 보호**
-- index.php 파일로 직접 접근 차단
+✅ **Directory Protection**
+- Direct access blocking with index.php files
 
-✅ **플러그인 보안**
-- ABSPATH 체크
-- Nonce 검증 준비
-- 이스케이프 함수 사용
+✅ **Plugin Security**
+- ABSPATH check
+- Nonce verification ready
+- Escape functions used
 
-## 업데이트 방법
+## Update Process
 
-1. 소스 코드 수정 후:
+1. After modifying source code:
 ```bash
 npm run build
 ```
 
-2. 새 빌드 파일을 플러그인 디렉토리에 복사:
+2. Copy new build files to plugin directory:
 ```bash
 cp public/build/bundle.* wordpress-plugin/bead-pattern-designer/assets/
 ```
 
-3. 워드프레스 서버에 업로드
+3. Upload to WordPress server
 
-## 문제 해결
+## Troubleshooting
 
-### 플러그인이 작동하지 않을 때
-1. 브라우저 개발자 도구에서 콘솔 에러 확인
-2. 워드프레스 디버그 모드 활성화
-3. PHP 버전 확인 (7.2 이상 필요)
+### Plugin Not Working
+1. Check browser console for errors
+2. Enable WordPress debug mode
+3. Verify PHP version (7.2+ required)
 
-### 스타일이 깨질 때
-1. 테마와의 CSS 충돌 확인
-2. 커스텀 클래스로 스타일 격리
+### Style Issues
+1. Check for CSS conflicts with theme
+2. Isolate styles with custom classes
