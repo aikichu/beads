@@ -359,7 +359,7 @@
       const deltaY = e.clientY - lastPanPoint.y
       
       // Much lower sensitivity for smoother panning
-      const sensitivity = 0.3
+      const sensitivity = 0.1
       
       panOffset.update(offset => ({
         x: offset.x + deltaX * sensitivity,
