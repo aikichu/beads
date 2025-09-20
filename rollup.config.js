@@ -31,9 +31,9 @@ function serve() {
 export default {
 	input: 'src/main.js',
 	output: {
-		sourcemap: true,
+		sourcemap: !production, // 프로덕션에서 소스맵 제거
 		format: 'iife',
-		name: 'app',
+		name: 'BeadApp',
 		file: 'public/build/bundle.js'
 	},
 	plugins: [
@@ -68,7 +68,22 @@ export default {
 
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify
-		production && terser()
+		production && terser({
+			compress: {
+				drop_console: true, // console.log 제거
+				drop_debugger: true,
+				pure_funcs: ['console.log', 'console.info', 'console.debug'],
+				passes: 2
+			},
+			mangle: {
+				properties: {
+					regex: /^_/ // _로 시작하는 프로퍼티 난독화
+				}
+			},
+			format: {
+				comments: false // 모든 주석 제거
+			}
+		})
 	],
 	watch: {
 		clearScreen: false
