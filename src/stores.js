@@ -1,5 +1,4 @@
-import { writable, derived } from 'svelte/store'
-import { areEqual } from './utils.js'
+import { derived } from 'svelte/store'
 import { SYMBOL_POOL, DEFAULT_COLOR_PALETTE, ZOOM_CONFIG, TOOL_MODES, APP_STEPS } from './constants.js'
 import { createStore, createToggleStore, createSelectionStore, createPositionStore } from './storeFactory.js'
 import { createDeltaHistory } from './deltaHistory.js'
@@ -14,7 +13,6 @@ const defaultColorPalette = () => (
 )
 // const defaultCanvas = () => ({...Array(400).fill().map((_,i) => (Math.floor(i/20) % 5))})
 const defaultCanvas = () => ({})
-const defaultHistory = () => ({cursor: 0, versions:[defaultCanvas()]})
 
 const createStep = () => createStore(APP_STEPS.PAINTING, {
   setPainting: function() { this.set(APP_STEPS.PAINTING) },

@@ -146,7 +146,7 @@ export function generateOffsetBeads(size, h, w, totalH, totalW, angle) {
 }
 
 // Fringe bead generator for brick stitch
-export function generateFringeBeads(fringeVisible, fringeLength, mainBeads, size, h, w, angle) {
+export function generateFringeBeads(fringeVisible, fringeLength, mainBeads, size, h, w) {
   if (!fringeVisible || fringeLength <= 0) {
     return []
   }
@@ -158,7 +158,7 @@ export function generateFringeBeads(fringeVisible, fringeLength, mainBeads, size
   const bottomRowBeadIds = getBottomRowBeadIds(size)
 
   bottomRowBeadIds.forEach(beadId => {
-    const mainBead = mainBeads.find(bead => bead.id == beadId)
+    const mainBead = mainBeads.find(bead => bead.id === beadId)
     if (!mainBead) return
 
     const startX = mainBead.x + mainBead.width / 2
