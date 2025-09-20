@@ -215,8 +215,8 @@
       <div class="colors-grid">
         {#each $colorPalette as color (color.id)}
           <div
-            class:selected={color.id == $selectedColorId && !$eraserMode}
-            class:blank={color.l == 100}
+            class:selected={color.id === $selectedColorId && !$eraserMode}
+            class:blank={color.l === 100}
             class:disabled={$eraserMode}
             class="color"
             style="--h:{color.h}; --s:{color.s}%; --l:{color.l}%"
