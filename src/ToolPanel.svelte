@@ -36,8 +36,8 @@
 
   // Reset view function
   const handleResetView = () => {
-    zoomLevel.set(1)
-    panOffset.set({ x: 0, y: 0 })
+    zoomLevel.set(0.3)  // Match the initial zoom level from stores.js
+    panOffset.set({ x: 1, y: 1 })
   }
 
   const handleToolSelect = (tool) => {

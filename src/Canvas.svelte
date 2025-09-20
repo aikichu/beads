@@ -387,8 +387,8 @@
   }
 
   const resetView = () => {
-    zoomLevel.set(1)
-    panOffset.set({ x: 0, y: 0 })
+    zoomLevel.set(0.3)  // Match the initial zoom level from stores.js
+    panOffset.set({ x: 1, y: 1 })  // Match the initial pan offset from stores.js
   }
 
   // Expose functions and state for external use
