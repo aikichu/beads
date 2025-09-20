@@ -3,3 +3,23 @@
 .DS_Store
 .idea/
 *.iml
+
+# WordPress Plugin Distribution Files
+*.tar.gz
+*.zip
+wordpress-plugin/bead-pattern-designer.tar.gz
+wordpress-plugin/bead-pattern-designer.zip
+
+# Docker credentials (remove if you want docker-compose public)
+# wordpress-plugin/docker-compose.yml
+docker-compose.override.yml
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.production

@@ -1,10 +1,9 @@
 <?php
 /**
  * Plugin Name: Bead Pattern Designer
- * Plugin URI: https://your-website.com/bead-pattern-designer
  * Description: Interactive tool for designing bead patterns. Supports Peyote, Brick, and Square stitches.
  * Version: 1.0.0
- * Author: Your Name
+ * Author: a sleepy creative
  * License: GPL v2 or later
  * Text Domain: bead-pattern-designer
  */

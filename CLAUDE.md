@@ -51,3 +51,4 @@ The application uses Svelte's built-in stores (`src/stores.js`) for global state
 - History system uses immutable updates with cursor-based navigation
 - Color palette includes visual symbols for pattern printing
 - Grid coordinates are computed based on stitch type and layout rotation
+- 파일은 영어로 작성하지만 나하고의 대화는 한글로 부탁해.

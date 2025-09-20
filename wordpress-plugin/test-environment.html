@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 참고: X-Frame-Options와 일부 CSP 지시자는 HTTP 헤더로만 설정 가능합니다 -->
-    <!-- 실제 워드프레스 환경에서는 PHP를 통해 HTTP 헤더로 전송됩니다 -->
+    <!-- Note: X-Frame-Options and some CSP directives can only be set via HTTP headers -->
+    <!-- In actual WordPress environment, they are sent as HTTP headers via PHP -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';">
-    <title>Bead Pattern Designer - 프로덕션 테스트</title>
+    <title>Bead Pattern Designer - Production Test</title>
 
-    <!-- WordPress 환경 시뮬레이션 -->
+    <!-- WordPress environment simulation -->
     <style>
-        /* WordPress 관리자 스타일 시뮬레이션 */
+        /* WordPress admin style simulation */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
             background: #f1f1f1;
@@ -84,40 +84,40 @@
         }
     </style>
 
-    <!-- 플러그인 CSS -->
+    <!-- Plugin CSS -->
     <link rel="stylesheet" href="bead-pattern-designer/assets/bundle.css">
 </head>
 <body>
     <div class="wrap">
-        <h1>🔒 Bead Pattern Designer - 프로덕션 환경 테스트</h1>
+        <h1>🔒 Bead Pattern Designer - Production Environment Test</h1>
 
         <div class="card">
-            <h2>1. 보안 헤더 테스트</h2>
+            <h2>1. Security Headers Test</h2>
             <div class="security-test">
-                <p>✅ CSP (Content Security Policy) 활성화 - <span class="success">작동 중!</span></p>
-                <p>⚠️ X-Frame-Options: HTTP 헤더로만 설정 가능 (워드프레스에서는 PHP로 처리)</p>
-                <p>⚠️ X-XSS-Protection: HTTP 헤더로만 설정 가능</p>
-                <p>⚠️ X-Content-Type-Options: HTTP 헤더로만 설정 가능</p>
-                <p class="warning">💡 콘솔의 경고는 정상입니다. 실제 워드프레스에서는 HTTP 헤더로 전송됩니다.</p>
+                <p>✅ CSP (Content Security Policy) Active - <span class="success">Working!</span></p>
+                <p>⚠️ X-Frame-Options: Can only be set via HTTP headers (handled by PHP in WordPress)</p>
+                <p>⚠️ X-XSS-Protection: Can only be set via HTTP headers</p>
+                <p>⚠️ X-Content-Type-Options: Can only be set via HTTP headers</p>
+                <p class="warning">💡 Console warnings are normal. In actual WordPress, sent as HTTP headers.</p>
             </div>
         </div>
 
         <div class="card">
-            <h2>2. XSS 공격 시뮬레이션 테스트</h2>
+            <h2>2. XSS Attack Simulation Test</h2>
             <div class="test-section">
-                <h3>악성 스크립트 주입 시도:</h3>
+                <h3>Malicious Script Injection Attempt:</h3>
 
-                <!-- XSS 테스트 1: 이벤트 핸들러 -->
+                <!-- XSS Test 1: Event Handler -->
                 <div id="xss-test-1" class="test' onmouseover='alert(1)' data-test='">
-                    이 영역에 마우스를 올려도 alert가 실행되지 않아야 합니다.
+                    Alert should NOT execute when hovering over this area.
                 </div>
 
-                <!-- XSS 테스트 2: JavaScript URL -->
+                <!-- XSS Test 2: JavaScript URL -->
                 <div id="xss-test-2" style="width: 100px; background-image: url('javascript:alert(2)');">
-                    JavaScript URL이 차단되어야 합니다.
+                    JavaScript URL should be blocked.
                 </div>
 
-                <!-- XSS 테스트 3: HTML 인젝션 -->
+                <!-- XSS Test 3: HTML Injection -->
                 <div id="xss-test-3"></div>
 
                 <div id="security-results"></div>
@@ -125,141 +125,141 @@
         </div>
 
         <div class="card">
-            <h2>3. 플러그인 인스턴스 테스트</h2>
+            <h2>3. Plugin Instance Test</h2>
 
-            <!-- 정상 인스턴스 -->
+            <!-- Normal Instance -->
             <div class="test-section">
-                <h3>인스턴스 #1 (정상)</h3>
+                <h3>Instance #1 (Normal)</h3>
                 <div id="bpd-test1" class="bead-pattern-designer-container" style="width: 100%; min-height: 400px; position: relative;" data-nonce="test-nonce-1"></div>
             </div>
 
-            <!-- CSS 검증 테스트 -->
+            <!-- CSS Validation Test -->
             <div class="test-section">
-                <h3>인스턴스 #2 (CSS 검증 테스트)</h3>
+                <h3>Instance #2 (CSS Validation Test)</h3>
                 <div id="bpd-test2" class="bead-pattern-designer-container" style="width: 80%; min-height: 300px; position: relative;" data-nonce="test-nonce-2"></div>
             </div>
         </div>
 
         <div class="card">
-            <h2>4. Rate Limiting 시뮬레이션</h2>
+            <h2>4. Rate Limiting Simulation</h2>
             <div class="test-section">
-                <button onclick="testRateLimit()">Rate Limit 테스트 (클릭)</button>
+                <button onclick="testRateLimit()">Rate Limit Test (Click)</button>
                 <div id="rate-limit-result"></div>
             </div>
         </div>
 
         <div class="card">
-            <h2>5. Nonce 검증 테스트</h2>
+            <h2>5. Nonce Verification Test</h2>
             <div class="test-section">
-                <button onclick="testNonceValidation()">Nonce 검증 테스트</button>
+                <button onclick="testNonceValidation()">Nonce Verification Test</button>
                 <div id="nonce-result"></div>
             </div>
         </div>
 
         <div class="card">
-            <h2>6. 난독화 검증</h2>
+            <h2>6. Obfuscation Verification</h2>
             <div class="test-section">
-                <button onclick="checkObfuscation()">JavaScript 난독화 확인</button>
+                <button onclick="checkObfuscation()">Check JavaScript Obfuscation</button>
                 <div id="obfuscation-result"></div>
             </div>
         </div>
     </div>
 
-    <!-- 플러그인 JavaScript -->
+    <!-- Plugin JavaScript -->
     <script src="bead-pattern-designer/assets/bundle.js"></script>
 
-    <!-- 테스트 스크립트 -->
+    <!-- Test Script -->
     <script>
-        // WordPress 환경 시뮬레이션
+        // WordPress environment simulation
         window.bpdNonce = 'test-nonce-' + Math.random().toString(36).substr(2, 9);
 
-        // 보안 테스트 초기화
+        // Initialize security tests
         document.addEventListener('DOMContentLoaded', function() {
             runSecurityTests();
         });
 
-        // XSS 테스트
+        // XSS Tests
         function runSecurityTests() {
             const results = document.getElementById('security-results');
-            let testResults = '=== XSS 보안 테스트 결과 ===\n\n';
+            let testResults = '=== XSS Security Test Results ===\n\n';
 
-            // 테스트 1: 이벤트 핸들러 차단
+            // Test 1: Event handler blocking
             const test1 = document.getElementById('xss-test-1');
             if (!test1.onmouseover) {
-                testResults += '✅ 테스트 1 통과: 이벤트 핸들러 인젝션 차단됨\n';
+                testResults += '✅ Test 1 Passed: Event handler injection blocked\n';
             } else {
-                testResults += '❌ 테스트 1 실패: 이벤트 핸들러가 실행될 수 있음\n';
+                testResults += '❌ Test 1 Failed: Event handler can be executed\n';
             }
 
-            // 테스트 2: JavaScript URL 차단
+            // Test 2: JavaScript URL blocking
             const test2 = document.getElementById('xss-test-2');
             const bgImage = window.getComputedStyle(test2).backgroundImage;
             if (!bgImage || bgImage === 'none' || !bgImage.includes('javascript:')) {
-                testResults += '✅ 테스트 2 통과: JavaScript URL 차단됨 (CSP가 차단함)\n';
-                testResults += '   → 콘솔 메시지 "Refused to load the image \'javascript:alert(2)\'"가 보이면 정상\n';
+                testResults += '✅ Test 2 Passed: JavaScript URL blocked (CSP blocked it)\n';
+                testResults += ' is normal\n';
             } else {
-                testResults += '❌ 테스트 2 실패: JavaScript URL이 실행될 수 있음\n';
+                testResults += '❌ Test 2 Failed: JavaScript URL can be executed\n';
             }
 
-            // 테스트 3: HTML 인젝션 시도
+            // Test 3: HTML injection attempt
             try {
                 const maliciousHTML = '<img src=x onerror="alert(3)">';
                 const sanitized = sanitizeHTML(maliciousHTML);
                 if (!sanitized.includes('onerror')) {
-                    testResults += '✅ 테스트 3 통과: HTML 인젝션 차단됨\n';
+                    testResults += '✅ Test 3 Passed: HTML injection blocked\n';
                 } else {
-                    testResults += '❌ 테스트 3 실패: HTML 인젝션 가능\n';
+                    testResults += '❌ Test 3 Failed: HTML injection possible\n';
                 }
             } catch(e) {
-                testResults += '⚠️ 테스트 3: sanitizeHTML 함수 없음 (서버사이드 처리 필요)\n';
+                testResults += '⚠️ Test 3: sanitizeHTML function not found (server-side processing required)\n';
             }
 
-            // CSP 테스트
+            // CSP Test
             try {
                 eval('console.log("CSP Test")');
-                testResults += '⚠️ CSP 경고: eval() 실행 가능 (unsafe-inline 때문)\n';
+                testResults += '⚠️ CSP Warning: eval() can be executed (due to unsafe-inline)\n';
             } catch(e) {
-                testResults += '✅ CSP 테스트 통과: eval() 차단됨\n';
+                testResults += '✅ CSP Test Passed: eval() blocked\n';
             }
 
             results.textContent = testResults;
         }
 
-        // Rate Limiting 테스트
+        // Rate Limiting Test
         let requestCount = 0;
         function testRateLimit() {
             requestCount++;
             const resultDiv = document.getElementById('rate-limit-result');
 
             if (requestCount <= 10) {
-                resultDiv.innerHTML = `<span class="success">요청 ${requestCount}/10 - 정상 처리</span>`;
+                resultDiv.innerHTML = `<span class="success">Request ${requestCount}/10 - Processed normally</span>`;
             } else {
-                resultDiv.innerHTML = `<span class="error">요청 ${requestCount}/10 - Rate Limit 초과! 요청 차단됨</span>`;
+                resultDiv.innerHTML = `<span class="error">Request ${requestCount}/10 - Rate Limit exceeded! Request blocked</span>`;
             }
 
-            // 1분 후 리셋
+            // Reset after 1 minute
             if (requestCount === 1) {
                 setTimeout(() => {
                     requestCount = 0;
-                    resultDiv.innerHTML += '<br><span class="warning">Rate limit 리셋됨</span>';
+                    resultDiv.innerHTML += '<br><span class="warning">Rate limit reset</span>';
                 }, 60000);
             }
         }
 
-        // Nonce 검증 테스트
+        // Nonce Verification Test
         function testNonceValidation() {
             const resultDiv = document.getElementById('nonce-result');
             const validNonce = window.bpdNonce;
             const invalidNonce = 'invalid-nonce-12345';
 
             resultDiv.innerHTML = `
-                <p>유효한 Nonce: <code>${validNonce}</code> - <span class="success">✅ 검증 통과</span></p>
-                <p>무효한 Nonce: <code>${invalidNonce}</code> - <span class="error">❌ 검증 실패</span></p>
-                <p class="warning">실제 환경에서는 서버사이드 검증이 수행됩니다.</p>
+                <p>Valid Nonce: <code>${validNonce}</code> - <span class="success">✅ Verification passed</span></p>
+                <p>Invalid Nonce: <code>${invalidNonce}</code> - <span class="error">❌ Verification failed</span></p>
+                <p class="warning">In production, server-side verification is performed.</p>
             `;
         }
 
-        // 난독화 검증
+        // Obfuscation Verification
         function checkObfuscation() {
             const resultDiv = document.getElementById('obfuscation-result');
             const script = document.querySelector('script[src*="bundle.js"]');
@@ -274,23 +274,23 @@
                         const hasComments = code.includes('//') || code.includes('/*');
                         const isMinified = code.length < 100000 && !code.includes('\n\n');
 
-                        let results = '<h4>난독화 검증 결과:</h4>';
-                        results += `<p>${!hasConsoleLog ? '✅' : '❌'} console.log 제거: ${!hasConsoleLog ? '통과' : '실패'}</p>`;
-                        results += `<p>${!hasDebugger ? '✅' : '❌'} debugger 제거: ${!hasDebugger ? '통과' : '실패'}</p>`;
-                        results += `<p>${!hasComments ? '✅' : '❌'} 주석 제거: ${!hasComments ? '통과' : '실패'}</p>`;
-                        results += `<p>${isMinified ? '✅' : '❌'} 코드 최소화: ${isMinified ? '통과' : '실패'}</p>`;
-                        results += `<p>파일 크기: ${(code.length / 1024).toFixed(2)} KB</p>`;
-                        results += `<details><summary>코드 샘플 (처음 500자)</summary><pre style="overflow-x: auto; font-size: 10px;">${escapeHtml(codeSnippet)}</pre></details>`;
+                        let results = '<h4>Obfuscation Verification Results:</h4>';
+                        results += `<p>${!hasConsoleLog ? '✅' : '❌'} console.log removal: ${!hasConsoleLog ? 'Passed' : 'Failed'}</p>`;
+                        results += `<p>${!hasDebugger ? '✅' : '❌'} debugger removal: ${!hasDebugger ? 'Passed' : 'Failed'}</p>`;
+                        results += `<p>${!hasComments ? '✅' : '❌'} Comment removal: ${!hasComments ? 'Passed' : 'Failed'}</p>`;
+                        results += `<p>${isMinified ? '✅' : '❌'} Code minification: ${isMinified ? 'Passed' : 'Failed'}</p>`;
+                        results += `<p>File size: ${(code.length / 1024).toFixed(2)} KB</p>`;
+                        results += `<details><summary>Code sample (first 500 chars)</summary><pre style="overflow-x: auto; font-size: 10px;">${escapeHtml(codeSnippet)}</pre></details>`;
 
                         resultDiv.innerHTML = results;
                     })
                     .catch(error => {
-                        resultDiv.innerHTML = `<span class="error">오류: ${error.message}</span>`;
+                        resultDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
                     });
             }
         }
 
-        // HTML 이스케이프 헬퍼
+        // HTML escape helper
         function escapeHtml(text) {
             const map = {
                 '&': '&amp;',
@@ -302,7 +302,7 @@
             return text.replace(/[&<>"']/g, m => map[m]);
         }
 
-        // 가짜 sanitizeHTML (실제로는 서버사이드에서 처리)
+        // Mock sanitizeHTML (actually processed server-side)
         function sanitizeHTML(html) {
             return html.replace(/<[^>]*>/g, '');
         }

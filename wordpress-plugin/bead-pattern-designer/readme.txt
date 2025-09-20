@@ -1,5 +1,5 @@
 === Bead Pattern Designer ===
-Contributors: yourname
+Contributors: Meursong
 Tags: bead, pattern, design, craft, peyote, brick, square stitch
 Requires at least: 5.0
 Tested up to: 6.4
