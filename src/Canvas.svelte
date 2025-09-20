@@ -30,12 +30,12 @@
   // Use consistent sizing that accommodates all stitch types without being too large
   $: unifiedCanvasWidth = gridSize * BEAD_WIDTH + 6  // Consistent width with padding
   $: unifiedCanvasHeight = gridSize * BEAD_HEIGHT + 6  // Consistent height with padding
-  
+
   $: maxCanvasWidth = Math.max(unifiedCanvasWidth, totalSideWidth)
   $: maxCanvasHeight = Math.max(unifiedCanvasHeight, totalSideHeight)
 
-  // Use consistent viewBox that doesn't change based on fringe visibility
-  $: viewBox = `0 0 ${maxCanvasWidth} ${maxCanvasHeight}`
+  // Reduce viewBox size to 1/6 to make canvas smaller
+  $: viewBox = `0 0 ${maxCanvasWidth / 3} ${maxCanvasHeight / 3}`
 
   $: beads = makeBeads(gridSize, BEAD_HEIGHT, BEAD_WIDTH, totalSideWidth, totalSideHeight, layoutRotation, stitchType, $peyoteStartingRow)
 
@@ -359,7 +359,7 @@
       const deltaY = e.clientY - lastPanPoint.y
       
       // Much lower sensitivity for smoother panning
-      const sensitivity = 0.1
+      const sensitivity = 0.05
       
       panOffset.update(offset => ({
         x: offset.x + deltaX * sensitivity,

@@ -28,13 +28,13 @@ const createEraserMode = () => createToggleStore(false)
 const createLegendVisible = () => createToggleStore(true)
 const createRowNumbersVisible = () => createToggleStore(false)
 
-const createZoomLevel = () => createStore(1, {
+const createZoomLevel = () => createStore(0.3, {  // Changed initial zoom from 1 to 0.5
   zoomIn: function() { this.update(level => Math.min(level * ZOOM_CONFIG.STEP, ZOOM_CONFIG.MAX)) },
   zoomOut: function() { this.update(level => Math.max(level / ZOOM_CONFIG.STEP, ZOOM_CONFIG.MIN)) },
   set: function(level) { this.update(() => Math.max(ZOOM_CONFIG.MIN, Math.min(level, ZOOM_CONFIG.MAX))) }
 })
 
-const createPanOffset = () => createPositionStore()
+const createPanOffset = () => createPositionStore({x: 1, y: 1 })  // Center the beads
 
 const createIsPanning = () => createToggleStore(false)
 

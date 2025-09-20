@@ -6,8 +6,8 @@ const range = (s) => [...Array(s).keys()]
 
 // Constants for bead dimensions
 export const BEAD_SIZE_RATIO = 0.82
-export const BEAD_WIDTH = 2 * BEAD_SIZE_RATIO
-export const BEAD_HEIGHT = 2
+export const BEAD_WIDTH = 2 * BEAD_SIZE_RATIO * 2  // Doubled size
+export const BEAD_HEIGHT = 2 * 2  // Doubled size
 
 
 // Square stitch generator
