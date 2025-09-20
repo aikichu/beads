@@ -1,0 +1,21 @@
+# 직접 파일 접근 차단
+<Files "*.php">
+    Order Deny,Allow
+    Deny from all
+    Allow from 127.0.0.1
+</Files>
+
+# 메인 플러그인 파일만 허용
+<Files "bead-pattern-designer.php">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+# assets 폴더 접근 허용
+<FilesMatch "\.(js|css|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# 디렉토리 브라우징 차단
+Options -Indexes
